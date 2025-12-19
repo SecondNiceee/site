@@ -28,17 +28,28 @@ export default function Hero() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0">
-        <div
+        <motion.div
+          initial={{ opacity: 0, scale: 1.1 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: `url('/molodoi-master-stroit-dom.jpg')`,
           }}
         />
         {/* Dark gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-background" />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-background"
+        />
         {/* Diagonal lines pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.03 }}
+          transition={{ duration: 1, delay: 0.4 }}
+          className="absolute inset-0"
           style={{
             backgroundImage: `repeating-linear-gradient(
               45deg,

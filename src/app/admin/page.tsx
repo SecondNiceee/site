@@ -84,6 +84,7 @@ export default function AdminPage() {
     workers: 0,
   });
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Settings state
@@ -269,26 +270,70 @@ export default function AdminPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setUploadError(null);
+
+    // Проверка типа файла
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      const errorMsg = `Неподдерживаемый тип файла: ${file.type}. Разрешены только JPEG, PNG, WebP и GIF.`;
+      setUploadError(errorMsg);
+      console.error(errorMsg);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      return;
+    }
+
+    // Проверка размера файла (макс 5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      const errorMsg = `Файл слишком большой: ${(file.size / 1024 / 1024).toFixed(2)}MB. Максимальный размер: 5MB.`;
+      setUploadError(errorMsg);
+      console.error(errorMsg);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      return;
+    }
+
     setUploading(true);
+    setUploadError(null);
+    
     try {
       const formDataUpload = new FormData();
       formDataUpload.append("file", file);
+
+      console.log("Загрузка файла:", file.name, "Тип:", file.type, "Размер:", file.size);
 
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formDataUpload,
       });
 
+      console.log("Ответ сервера:", response.status, response.statusText);
+
       if (response.ok) {
         const data = await response.json();
+        console.log("Файл загружен успешно:", data.url);
         setFormData({ ...formData, image: data.url });
+        setUploadError(null);
       } else {
-        const errorData = await response.json();
-        alert(errorData.error || "Ошибка загрузки файла");
+        let errorMessage = "Ошибка загрузки файла";
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+          console.error("Ошибка сервера:", errorData);
+        } catch (parseError) {
+          const text = await response.text();
+          console.error("Ошибка парсинга ответа:", text);
+          errorMessage = `Ошибка ${response.status}: ${response.statusText}`;
+        }
+        setUploadError(errorMessage);
       }
     } catch (error) {
-      console.error("Error uploading file:", error);
-      alert("Ошибка загрузки файла");
+      const errorMessage = `Ошибка загрузки файла: ${error instanceof Error ? error.message : "Неизвестная ошибка"}`;
+      console.error(errorMessage, error);
+      setUploadError(errorMessage);
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
@@ -776,6 +821,11 @@ export default function AdminPage() {
                               )}
                             </Button>
                           </div>
+                          {uploadError && (
+                            <div className="text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg p-2">
+                              {uploadError}
+                            </div>
+                          )}
                           {formData.image && (
                             <div className="relative w-32 h-24 rounded-lg overflow-hidden bg-secondary">
                               <Image
@@ -785,7 +835,10 @@ export default function AdminPage() {
                                 className="object-cover"
                               />
                               <button
-                                onClick={() => setFormData({ ...formData, image: "" })}
+                                onClick={() => {
+                                  setFormData({ ...formData, image: "" });
+                                  setUploadError(null);
+                                }}
                                 className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center hover:bg-black/70"
                               >
                                 <X className="w-3 h-3" />
