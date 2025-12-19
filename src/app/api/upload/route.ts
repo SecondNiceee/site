@@ -1,19 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir, access, constants } from "fs/promises";
-import { existsSync } from "fs";
-import path from "path";
+import { supabaseAdmin } from "@/lib/supabase";
+
+const BUCKET_NAME = "uploads";
 
 export async function POST(request: NextRequest) {
   try {
-    // Проверка окружения - на Vercel и других serverless платформах файловая система только для чтения
-    const isVercel = process.env.VERCEL === "1" || process.env.VERCEL_ENV;
-    const isServerless = process.cwd().includes("/var/task") || process.cwd().includes("/tmp");
-    
-    if (isVercel || isServerless) {
-      console.error("Загрузка файлов не поддерживается на serverless платформах");
+    // Проверка наличия Supabase Admin клиента
+    if (!supabaseAdmin) {
+      console.error("Supabase Admin клиент не настроен. Проверьте SUPABASE_SERVICE_ROLE_KEY.");
       return NextResponse.json(
         { 
-          error: "Загрузка файлов не поддерживается на этой платформе. Используйте Supabase Storage или другой сервис хранения файлов." 
+          error: "Сервис загрузки файлов не настроен. Проверьте конфигурацию Supabase." 
         },
         { status: 503 }
       );
@@ -22,14 +19,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
-    console.log("Получен запрос на загрузку файла");
-    console.log("Текущая рабочая директория:", process.cwd());
-    console.log("Окружение:", {
-      NODE_ENV: process.env.NODE_ENV,
-      VERCEL: process.env.VERCEL,
-      isVercel,
-      isServerless,
-    });
+    console.log("Получен запрос на загрузку файла в Supabase Storage");
 
     if (!file) {
       console.error("Файл не предоставлен");
@@ -65,69 +55,82 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Определение пути к директории uploads
-    // Используем __dirname альтернативу для Next.js App Router
-    const projectRoot = process.cwd();
-    const uploadsDir = path.join(projectRoot, "public", "uploads");
-    
-    console.log("Директория для загрузки:", uploadsDir);
-    console.log("Директория существует:", existsSync(uploadsDir));
-    
-    // Проверка прав на запись
-    try {
-      if (!existsSync(uploadsDir)) {
-        console.log("Создание директории:", uploadsDir);
-        await mkdir(uploadsDir, { recursive: true });
-      }
-      
-      // Проверка прав на запись
-      await access(uploadsDir, constants.W_OK);
-      console.log("Права на запись подтверждены");
-    } catch (dirError) {
-      console.error("Ошибка доступа к директории:", dirError);
-      const errorMsg = dirError instanceof Error ? dirError.message : "Unknown error";
-      return NextResponse.json(
-        { 
-          error: `Нет доступа к директории для загрузки файлов: ${errorMsg}. Убедитесь, что приложение запущено в режиме разработки (npm run dev), а не в production режиме.` 
-        },
-        { status: 500 }
-      );
-    }
-
     // Generate unique filename
     const timestamp = Date.now();
     const ext = file.name.split(".").pop() || "jpg";
     const filename = `${timestamp}-${Math.random().toString(36).substring(7)}.${ext}`;
-    const filepath = path.join(uploadsDir, filename);
+    const filePath = filename;
 
-    console.log("Сохранение файла:", filepath);
+    console.log("Загрузка файла в Supabase Storage:", filePath);
 
-    // Write file
-    try {
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      await writeFile(filepath, buffer);
-      console.log("Файл успешно сохранен:", filename);
-    } catch (writeError) {
-      console.error("Ошибка записи файла:", writeError);
-      const errorMsg = writeError instanceof Error ? writeError.message : "Unknown error";
+    // Convert file to buffer
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // Upload to Supabase Storage
+    const { data, error } = await supabaseAdmin.storage
+      .from(BUCKET_NAME)
+      .upload(filePath, buffer, {
+        contentType: file.type,
+        upsert: false, // Не перезаписывать существующие файлы
+      });
+
+    if (error) {
+      console.error("Ошибка загрузки в Supabase Storage:", error);
       
-      if (errorMsg.includes("EROFS") || errorMsg.includes("read-only")) {
-        return NextResponse.json(
-          { 
-            error: "Файловая система доступна только для чтения. Убедитесь, что приложение запущено в режиме разработки (npm run dev), а не в production режиме. Для production используйте Supabase Storage или другой сервис хранения файлов." 
-          },
-          { status: 503 }
-        );
+      // Проверка на существующий файл
+      if (error.message.includes("already exists") || error.message.includes("duplicate")) {
+        // Если файл уже существует, генерируем новое имя
+        const newFilename = `${timestamp}-${Math.random().toString(36).substring(7)}-${Date.now()}.${ext}`;
+        const retryResult = await supabaseAdmin.storage
+          .from(BUCKET_NAME)
+          .upload(newFilename, buffer, {
+            contentType: file.type,
+            upsert: false,
+          });
+        
+        if (retryResult.error) {
+          return NextResponse.json(
+            { error: `Ошибка загрузки файла: ${retryResult.error.message}` },
+            { status: 500 }
+          );
+        }
+        
+        // Get public URL
+        const { data: urlData } = supabaseAdmin.storage
+          .from(BUCKET_NAME)
+          .getPublicUrl(newFilename);
+        
+        console.log("Файл успешно загружен в Supabase Storage:", newFilename);
+        return NextResponse.json({ success: true, url: urlData.publicUrl });
       }
       
-      throw writeError;
+      return NextResponse.json(
+        { error: `Ошибка загрузки файла: ${error.message}` },
+        { status: 500 }
+      );
     }
 
-    // Return the public URL
-    const url = `/uploads/${filename}`;
+    if (!data) {
+      console.error("Данные не получены после загрузки");
+      return NextResponse.json(
+        { error: "Ошибка загрузки файла: данные не получены" },
+        { status: 500 }
+      );
+    }
 
-    return NextResponse.json({ success: true, url });
+    // Get public URL
+    const { data: urlData } = supabaseAdmin.storage
+      .from(BUCKET_NAME)
+      .getPublicUrl(filePath);
+
+    console.log("Файл успешно загружен в Supabase Storage:", filePath);
+    console.log("Публичный URL:", urlData.publicUrl);
+
+    return NextResponse.json({ 
+      success: true, 
+      url: urlData.publicUrl 
+    });
   } catch (error) {
     console.error("Ошибка загрузки файла:", error);
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
