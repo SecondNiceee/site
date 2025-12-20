@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDown, Users, Clock, Shield } from "lucide-react";
+import { Users, Clock, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "@/hooks/useSettings";
 
@@ -165,26 +165,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-      >
-        <motion.button
-          onClick={() => {
-            const element = document.querySelector("#services");
-            if (element) element.scrollIntoView({ behavior: "smooth" });
-          }}
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="flex flex-col items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <span className="text-xs uppercase tracking-widest">Скролл</span>
-          <ArrowDown className="w-5 h-5" />
-        </motion.button>
-      </motion.div>
     </section>
   );
 }

@@ -33,6 +33,9 @@ interface SiteSettings {
   form: {
     enabled: boolean;
   };
+  workingHours: {
+    enabled: boolean;
+  };
   blocks: {
     hero: boolean;
     services: boolean;
@@ -86,6 +89,9 @@ export async function GET() {
           enabled: true,
         },
         form: {
+          enabled: true,
+        },
+        workingHours: {
           enabled: true,
         },
         blocks: {

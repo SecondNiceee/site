@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import { 
   Plus, Edit, Trash2, Save, X, Lock, Eye, EyeOff, 
   Upload, Image as ImageIcon, Settings, FolderOpen,
-  Phone, Mail, MapPin, MessageCircle, Globe, FileText, Shield
+  Phone, Mail, MapPin, MessageCircle, Globe, FileText, Shield, Clock,
+  HelpCircle, Briefcase
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,6 +58,9 @@ interface SiteSettings {
   form: {
     enabled: boolean;
   };
+  workingHours: {
+    enabled: boolean;
+  };
   blocks: {
     hero: boolean;
     services: boolean;
@@ -75,7 +79,7 @@ export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"portfolio" | "settings" | "documents" | "security" | "blocks">("portfolio");
+  const [activeTab, setActiveTab] = useState<"portfolio" | "settings" | "documents" | "security" | "blocks" | "faq" | "services">("portfolio");
 
   // Portfolio state
   const [items, setItems] = useState<PortfolioItem[]>([]);
@@ -96,6 +100,18 @@ export default function AdminPage() {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [logoUploadError, setLogoUploadError] = useState<string | null>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
+
+  // FAQ state
+  const [faqItems, setFaqItems] = useState<Array<{id: string; question: string; answer: string; order_index?: number}>>([]);
+  const [editingFaq, setEditingFaq] = useState<{id: string; question: string; answer: string; order_index?: number} | null>(null);
+  const [isCreatingFaq, setIsCreatingFaq] = useState(false);
+  const [faqFormData, setFaqFormData] = useState({ question: "", answer: "", order_index: 0 });
+
+  // Services state
+  const [serviceItems, setServiceItems] = useState<Array<{id: string; title: string; description: string; icon: string; features: string[]; order_index?: number}>>([]);
+  const [editingService, setEditingService] = useState<{id: string; title: string; description: string; icon: string; features: string[]; order_index?: number} | null>(null);
+  const [isCreatingService, setIsCreatingService] = useState(false);
+  const [serviceFormData, setServiceFormData] = useState({ title: "", description: "", icon: "Building2", features: [] as string[], order_index: 0 });
 
   // Settings state
   const [settings, setSettings] = useState<SiteSettings | null>(null);
@@ -130,11 +146,37 @@ export default function AdminPage() {
   }, []);
 
   // Load data
+  const fetchFAQ = async () => {
+    try {
+      const response = await fetch("/api/admin/faq");
+      if (response.ok) {
+        const data = await response.json();
+        setFaqItems(data.items || []);
+      }
+    } catch (error) {
+      console.error("Error fetching FAQ:", error);
+    }
+  };
+
+  const fetchServices = async () => {
+    try {
+      const response = await fetch("/api/admin/services");
+      if (response.ok) {
+        const data = await response.json();
+        setServiceItems(data.items || []);
+      }
+    } catch (error) {
+      console.error("Error fetching services:", error);
+    }
+  };
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchPortfolio();
       fetchSettings();
       fetchDocuments();
+      fetchFAQ();
+      fetchServices();
     }
   }, [isAuthenticated]);
 
@@ -162,6 +204,10 @@ export default function AdminPage() {
         // Убеждаемся, что form поле присутствует
         if (!data.form) {
           data.form = { enabled: true };
+        }
+        // Убеждаемся, что workingHours поле присутствует
+        if (!data.workingHours) {
+          data.workingHours = { enabled: true };
         }
         setSettings(data);
       }
@@ -476,6 +522,130 @@ export default function AdminPage() {
     }
   };
 
+  // FAQ handlers
+  const handleEditFaq = (item: typeof faqItems[0]) => {
+    setEditingFaq(item);
+    setIsCreatingFaq(false);
+    setFaqFormData({ question: item.question, answer: item.answer, order_index: item.order_index || 0 });
+  };
+
+  const handleCreateFaq = () => {
+    setEditingFaq(null);
+    setIsCreatingFaq(true);
+    setFaqFormData({ question: "", answer: "", order_index: faqItems.length });
+  };
+
+  const handleCancelFaq = () => {
+    setEditingFaq(null);
+    setIsCreatingFaq(false);
+    setFaqFormData({ question: "", answer: "", order_index: 0 });
+  };
+
+  const handleSaveFaq = async () => {
+    try {
+      const method = isCreatingFaq ? "POST" : "PUT";
+      const body = isCreatingFaq
+        ? { ...faqFormData, id: Date.now().toString() }
+        : { ...faqFormData, id: editingFaq?.id };
+
+      const response = await fetch("/api/admin/faq", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (response.ok) {
+        fetchFAQ();
+        handleCancelFaq();
+      }
+    } catch (error) {
+      console.error("Error saving FAQ:", error);
+    }
+  };
+
+  const handleDeleteFaq = async (id: string) => {
+    if (!confirm("Удалить этот вопрос?")) return;
+
+    try {
+      const response = await fetch("/api/admin/faq", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+
+      if (response.ok) {
+        fetchFAQ();
+      }
+    } catch (error) {
+      console.error("Error deleting FAQ:", error);
+    }
+  };
+
+  // Services handlers
+  const handleEditService = (item: typeof serviceItems[0]) => {
+    setEditingService(item);
+    setIsCreatingService(false);
+    setServiceFormData({ 
+      title: item.title, 
+      description: item.description, 
+      icon: item.icon, 
+      features: item.features || [],
+      order_index: item.order_index || 0 
+    });
+  };
+
+  const handleCreateService = () => {
+    setEditingService(null);
+    setIsCreatingService(true);
+    setServiceFormData({ title: "", description: "", icon: "Building2", features: [], order_index: serviceItems.length });
+  };
+
+  const handleCancelService = () => {
+    setEditingService(null);
+    setIsCreatingService(false);
+    setServiceFormData({ title: "", description: "", icon: "Building2", features: [], order_index: 0 });
+  };
+
+  const handleSaveService = async () => {
+    try {
+      const method = isCreatingService ? "POST" : "PUT";
+      const body = isCreatingService
+        ? { ...serviceFormData, id: Date.now().toString() }
+        : { ...serviceFormData, id: editingService?.id };
+
+      const response = await fetch("/api/admin/services", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (response.ok) {
+        fetchServices();
+        handleCancelService();
+      }
+    } catch (error) {
+      console.error("Error saving service:", error);
+    }
+  };
+
+  const handleDeleteService = async (id: string) => {
+    if (!confirm("Удалить эту услугу?")) return;
+
+    try {
+      const response = await fetch("/api/admin/services", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+
+      if (response.ok) {
+        fetchServices();
+      }
+    } catch (error) {
+      console.error("Error deleting service:", error);
+    }
+  };
+
   // Settings handlers
   const handleSaveSettings = async () => {
     if (!settings) return;
@@ -756,6 +926,44 @@ export default function AdminPage() {
               Блоки сайта
             </div>
             {activeTab === "blocks" && (
+              <motion.div
+                layoutId="activeTab"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[oklch(0.75_0.18_50)]"
+              />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab("faq")}
+            className={`px-6 py-3 font-medium transition-colors relative ${
+              activeTab === "faq"
+                ? "text-[oklch(0.75_0.18_50)]"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <HelpCircle className="w-4 h-4" />
+              FAQ
+            </div>
+            {activeTab === "faq" && (
+              <motion.div
+                layoutId="activeTab"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[oklch(0.75_0.18_50)]"
+              />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab("services")}
+            className={`px-6 py-3 font-medium transition-colors relative ${
+              activeTab === "services"
+                ? "text-[oklch(0.75_0.18_50)]"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <Briefcase className="w-4 h-4" />
+              Услуги
+            </div>
+            {activeTab === "services" && (
               <motion.div
                 layoutId="activeTab"
                 className="absolute bottom-0 left-0 right-0 h-0.5 bg-[oklch(0.75_0.18_50)]"
@@ -1337,6 +1545,33 @@ export default function AdminPage() {
               </CardContent>
             </Card>
 
+            {/* Working Hours Section */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-[oklch(0.75_0.18_50)]" />
+                  Режим работы
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="working-hours-enabled"
+                    checked={settings.workingHours?.enabled ?? true}
+                    onChange={(e) => updateSettings("workingHours", "enabled", e.target.checked)}
+                    className="w-4 h-4 rounded border-border"
+                  />
+                  <label htmlFor="working-hours-enabled" className="text-sm font-medium cursor-pointer">
+                    Показывать блок "Режим работы" в разделе контактов
+                  </label>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Когда блок выключен, информация о режиме работы не будет отображаться в разделе контактов.
+                </p>
+              </CardContent>
+            </Card>
+
             {/* SEO */}
             <Card className="bg-card border-border">
               <CardHeader>
@@ -1589,6 +1824,270 @@ export default function AdminPage() {
                 )}
                 Сохранить настройки блоков
               </Button>
+            </div>
+          </div>
+        )}
+
+        {/* FAQ Tab */}
+        {activeTab === "faq" && (
+          <div className="space-y-8">
+            <div className="flex justify-end mb-6">
+              <Button
+                onClick={handleCreateFaq}
+                className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Добавить вопрос
+              </Button>
+            </div>
+
+            {(editingFaq || isCreatingFaq) && (
+              <Card className="bg-card border-border">
+                <CardHeader>
+                  <CardTitle>
+                    {isCreatingFaq ? "Новый вопрос" : "Редактирование вопроса"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Вопрос
+                      </label>
+                      <Input
+                        value={faqFormData.question}
+                        onChange={(e) =>
+                          setFaqFormData({ ...faqFormData, question: e.target.value })
+                        }
+                        className="bg-background border-border"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Ответ
+                      </label>
+                      <Textarea
+                        value={faqFormData.answer}
+                        onChange={(e) =>
+                          setFaqFormData({ ...faqFormData, answer: e.target.value })
+                        }
+                        rows={4}
+                        className="bg-background border-border"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Порядок сортировки
+                      </label>
+                      <Input
+                        type="number"
+                        value={faqFormData.order_index}
+                        onChange={(e) =>
+                          setFaqFormData({ ...faqFormData, order_index: parseInt(e.target.value) || 0 })
+                        }
+                        className="bg-background border-border"
+                      />
+                    </div>
+                    <div className="flex gap-3">
+                      <Button
+                        onClick={handleSaveFaq}
+                        className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold"
+                      >
+                        <Save className="w-4 h-4 mr-2" />
+                        Сохранить
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={handleCancelFaq}
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Отмена
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="grid grid-cols-1 gap-4">
+              {faqItems.map((item) => (
+                <Card key={item.id} className="bg-card border-border">
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h3 className="font-semibold mb-2">{item.question}</h3>
+                        <p className="text-sm text-muted-foreground">{item.answer}</p>
+                      </div>
+                      <div className="flex gap-2 ml-4">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditFaq(item)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteFaq(item.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Services Tab */}
+        {activeTab === "services" && (
+          <div className="space-y-8">
+            <div className="flex justify-end mb-6">
+              <Button
+                onClick={handleCreateService}
+                className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Добавить услугу
+              </Button>
+            </div>
+
+            {(editingService || isCreatingService) && (
+              <Card className="bg-card border-border">
+                <CardHeader>
+                  <CardTitle>
+                    {isCreatingService ? "Новая услуга" : "Редактирование услуги"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Название
+                      </label>
+                      <Input
+                        value={serviceFormData.title}
+                        onChange={(e) =>
+                          setServiceFormData({ ...serviceFormData, title: e.target.value })
+                        }
+                        className="bg-background border-border"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Описание
+                      </label>
+                      <Textarea
+                        value={serviceFormData.description}
+                        onChange={(e) =>
+                          setServiceFormData({ ...serviceFormData, description: e.target.value })
+                        }
+                        rows={3}
+                        className="bg-background border-border"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Иконка (название из lucide-react)
+                      </label>
+                      <Input
+                        value={serviceFormData.icon}
+                        onChange={(e) =>
+                          setServiceFormData({ ...serviceFormData, icon: e.target.value })
+                        }
+                        placeholder="Building2, Warehouse, Wrench, Factory"
+                        className="bg-background border-border"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Особенности (через запятую)
+                      </label>
+                      <Input
+                        value={serviceFormData.features.join(", ")}
+                        onChange={(e) =>
+                          setServiceFormData({ 
+                            ...serviceFormData, 
+                            features: e.target.value.split(",").map(f => f.trim()).filter(f => f) 
+                          })
+                        }
+                        placeholder="Особенность 1, Особенность 2, Особенность 3"
+                        className="bg-background border-border"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Порядок сортировки
+                      </label>
+                      <Input
+                        type="number"
+                        value={serviceFormData.order_index}
+                        onChange={(e) =>
+                          setServiceFormData({ ...serviceFormData, order_index: parseInt(e.target.value) || 0 })
+                        }
+                        className="bg-background border-border"
+                      />
+                    </div>
+                    <div className="flex gap-3">
+                      <Button
+                        onClick={handleSaveService}
+                        className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold"
+                      >
+                        <Save className="w-4 h-4 mr-2" />
+                        Сохранить
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={handleCancelService}
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Отмена
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {serviceItems.map((item) => (
+                <Card key={item.id} className="bg-card border-border">
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h3 className="font-semibold mb-2">{item.title}</h3>
+                        <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
+                        <div className="flex flex-wrap gap-1">
+                          {item.features.map((feature, idx) => (
+                            <span key={idx} className="text-xs px-2 py-1 bg-secondary rounded">
+                              {feature}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex gap-2 ml-4">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditService(item)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteService(item.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         )}

@@ -140,7 +140,7 @@ export default function Footer() {
         <div className="container mx-auto px-4 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © {currentYear} {settings.company.name}. Все права защищены.
+              © {currentYear} {settings.company.name}.
             </p>
             <motion.button
               onClick={scrollToTop}

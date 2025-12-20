@@ -34,6 +34,9 @@ export interface SiteSettings {
   form: {
     enabled: boolean;
   };
+  workingHours: {
+    enabled: boolean;
+  };
   blocks: {
     hero: boolean;
     services: boolean;
@@ -75,6 +78,9 @@ const defaultSettings: SiteSettings = {
     enabled: true,
   },
   form: {
+    enabled: true,
+  },
+  workingHours: {
     enabled: true,
   },
   blocks: {

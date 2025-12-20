@@ -37,7 +37,7 @@ export default function Home() {
     <main className="noise-overlay min-h-screen">
       <Header />
       {blocks.hero && <Hero />}
-      {blocks.services && <Services />}
+      {blocks.services !== false && <Services />}
       {blocks.about && <About />}
       {blocks.portfolio && <Portfolio />}
       {blocks.portfolio && blocks.howItWorks && <SectionDivider />}

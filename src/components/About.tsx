@@ -116,37 +116,6 @@ export default function About() {
               и готов к работе.
             </motion.p>
 
-            {/* Quick stats */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-wrap gap-8"
-            >
-              <div>
-                <span className="font-[var(--font-oswald)] text-4xl font-bold text-[oklch(0.75_0.18_50)]">
-                  5+
-                </span>
-                <p className="text-sm text-muted-foreground mt-1">Лет на рынке</p>
-              </div>
-              <div>
-                <span className="font-[var(--font-oswald)] text-4xl font-bold text-[oklch(0.75_0.18_50)]">
-                  200+
-                </span>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Завершённых проектов
-                </p>
-              </div>
-              <div>
-                <span className="font-[var(--font-oswald)] text-4xl font-bold text-[oklch(0.75_0.18_50)]">
-                  50+
-                </span>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Постоянных клиентов
-                </p>
-              </div>
-            </motion.div>
           </div>
 
           {/* Right Column - Features */}

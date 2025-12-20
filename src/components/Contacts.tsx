@@ -178,18 +178,20 @@ export default function Contacts() {
             )}
 
             {/* Working hours */}
-            <div className="mt-10 p-6 rounded-2xl bg-card/50 border border-border">
-              <h3 className="font-semibold mb-3">Режим работы</h3>
-              <p className="text-muted-foreground text-sm">
-                Пн-Пт: 9:00 — 20:00
-                <br />
-                Сб-Вс: 10:00 — 18:00
-                <br />
-                <span className="text-[oklch(0.75_0.18_50)]">
-                  Срочные заявки — круглосуточно
-                </span>
-              </p>
-            </div>
+            {settings.workingHours?.enabled !== false && (
+              <div className="mt-10 p-6 rounded-2xl bg-card/50 border border-border">
+                <h3 className="font-semibold mb-3">Режим работы</h3>
+                <p className="text-muted-foreground text-sm">
+                  Пн-Пт: 9:00 — 20:00
+                  <br />
+                  Сб-Вс: 10:00 — 18:00
+                  <br />
+                  <span className="text-[oklch(0.75_0.18_50)]">
+                    Срочные заявки — круглосуточно
+                  </span>
+                </p>
+              </div>
+            )}
           </motion.div>
 
           {/* Contact Form */}
