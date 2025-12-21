@@ -23,8 +23,6 @@ const navLinks = [
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [showAdminPrompt, setShowAdminPrompt] = useState(false);
-  const [adminPassword, setAdminPassword] = useState("");
   const { settings } = useSettings();
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
@@ -77,34 +75,6 @@ export default function Header() {
     }
   };
 
-  // Secret admin access - double click on logo
-  const handleLogoClick = () => {
-    setShowAdminPrompt(true);
-  };
-
-  const handleAdminLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("/api/admin/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: adminPassword }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        // Сохраняем флаг авторизации в sessionStorage
-        sessionStorage.setItem("admin_authenticated", "true");
-        router.push("/admin");
-        setShowAdminPrompt(false);
-        setAdminPassword("");
-      } else {
-        alert(data.message || "Неверный пароль");
-      }
-    } catch (error) {
-      console.error("Error authenticating:", error);
-      alert("Ошибка входа");
-    }
-  };
 
   // Format phone for tel: link
   const phoneLink = settings.contacts.phone.replace(/[^+\d]/g, "");
@@ -134,10 +104,6 @@ export default function Header() {
             <Link
               href="/"
               className="flex items-center gap-3"
-              onDoubleClick={(e) => {
-                e.preventDefault();
-                handleLogoClick();
-              }}
             >
               <motion.div
                 whileHover={{ scale: 1.02 }}
@@ -302,66 +268,6 @@ export default function Header() {
         )}
       </AnimatePresence>
 
-      {/* Admin Login Modal */}
-      <AnimatePresence>
-        {showAdminPrompt && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-            onClick={() => {
-              setShowAdminPrompt(false);
-              setAdminPassword("");
-            }}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-card border border-border rounded-2xl p-8 max-w-md w-full mx-4"
-            >
-              <h2 className="font-[var(--font-oswald)] text-2xl font-bold uppercase mb-4">
-                Вход в админ-панель
-              </h2>
-              <form onSubmit={handleAdminLogin} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Пароль
-                  </label>
-                  <Input
-                    type="password"
-                    value={adminPassword}
-                    onChange={(e) => setAdminPassword(e.target.value)}
-                    placeholder="Введите пароль"
-                    className="bg-background border-border"
-                    autoFocus
-                  />
-                </div>
-                <div className="flex gap-3">
-                  <Button
-                    type="submit"
-                    className="flex-1 bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold"
-                  >
-                    Войти
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setShowAdminPrompt(false);
-                      setAdminPassword("");
-                    }}
-                  >
-                    Отмена
-                  </Button>
-                </div>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }

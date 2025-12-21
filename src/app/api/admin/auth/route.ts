@@ -3,7 +3,14 @@ import { supabaseAdmin } from "@/lib/supabase";
 
 export async function POST(request: Request) {
   try {
-    const { password } = await request.json();
+    const { username, password } = await request.json();
+    
+    if (!username || !password) {
+      return NextResponse.json(
+        { success: false, message: "Логин и пароль обязательны" },
+        { status: 400 }
+      );
+    }
     
     if (!supabaseAdmin) {
       return NextResponse.json(
@@ -12,26 +19,31 @@ export async function POST(request: Request) {
       );
     }
 
-    // Получаем пароль из БД
+    // Получаем данные администратора из БД
+    // Пытаемся получить username и password, если username отсутствует - используем значение по умолчанию
     const { data, error } = await supabaseAdmin
       .from("admin")
-      .select("password")
+      .select("*")
       .limit(1)
       .single();
     
     if (error || !data) {
       console.error("Error fetching admin:", error);
       return NextResponse.json(
-        { success: false, message: "Ошибка аутентификации" },
+        { success: false, message: "Ошибка аутентификации. Проверьте, что таблица admin существует и содержит данные." },
         { status: 500 }
       );
     }
     
-    if (password === data.password) {
+    // Если username отсутствует в БД, используем значение по умолчанию "admin"
+    const dbUsername = data.username || "admin";
+    
+    // Проверяем логин и пароль
+    if (username === dbUsername && password === data.password) {
       return NextResponse.json({ success: true });
     } else {
       return NextResponse.json(
-        { success: false, message: "Неверный пароль" },
+        { success: false, message: "Неверный логин или пароль" },
         { status: 401 }
       );
     }

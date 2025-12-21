@@ -6,7 +6,7 @@ import {
   Plus, Edit, Trash2, Save, X, Lock, Eye, EyeOff, 
   Upload, Image as ImageIcon, Settings, FolderOpen,
   Phone, Mail, MapPin, MessageCircle, Globe, FileText, Shield, Clock,
-  HelpCircle, Briefcase
+  HelpCircle, Briefcase, LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,7 +75,10 @@ interface SiteSettings {
 const categories = ["Строительство", "Склад", "Промышленность", "Монтаж"];
 
 export default function AdminPage() {
+  // По умолчанию не авторизован - показываем форму входа
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -130,19 +133,43 @@ export default function AdminPage() {
   const [savingDocuments, setSavingDocuments] = useState(false);
 
   // Security state
+  const [currentUsername, setCurrentUsername] = useState("");
+  const [newUsername, setNewUsername] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
+  const [changingUsername, setChangingUsername] = useState(false);
   const [passwordError, setPasswordError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
 
   // Check authentication on mount
   useEffect(() => {
     // Проверяем, есть ли флаг авторизации в sessionStorage
-    const isAuth = sessionStorage.getItem("admin_authenticated");
-    if (isAuth === "true") {
-      setIsAuthenticated(true);
+    // Используем проверку только на клиенте
+    if (typeof window !== "undefined") {
+      try {
+        const isAuth = sessionStorage.getItem("admin_authenticated");
+        // Явно проверяем, что значение равно строке "true"
+        // Если значение не равно "true" или отсутствует, показываем форму входа
+        console.log("Checking auth, sessionStorage value:", isAuth);
+        if (isAuth === "true") {
+          console.log("User is authenticated");
+          setIsAuthenticated(true);
+        } else {
+          // Если нет авторизации, явно очищаем sessionStorage
+          console.log("User is not authenticated, clearing sessionStorage");
+          sessionStorage.removeItem("admin_authenticated");
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error("Error checking auth:", error);
+        setIsAuthenticated(false);
+      }
+    } else {
+      setIsAuthenticated(false);
     }
+    setIsCheckingAuth(false);
   }, []);
 
   // Load data
@@ -230,11 +257,15 @@ export default function AdminPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!username || !password) {
+      setError("Введите логин и пароль");
+      return;
+    }
     try {
       const response = await fetch("/api/admin/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ username, password }),
       });
       const data = await response.json();
       if (data.success) {
@@ -242,13 +273,65 @@ export default function AdminPage() {
         sessionStorage.setItem("admin_authenticated", "true");
         setIsAuthenticated(true);
         setError("");
+        setUsername("");
         setPassword("");
       } else {
-        setError(data.message || "Неверный пароль");
+        setError(data.message || "Неверный логин или пароль");
       }
     } catch (error) {
       console.error("Error authenticating:", error);
       setError("Ошибка входа");
+    }
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("admin_authenticated");
+    setIsAuthenticated(false);
+    setUsername("");
+    setPassword("");
+  };
+
+  const handleChangeUsername = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUsernameError("");
+
+    if (!newUsername || newUsername.trim().length === 0) {
+      setUsernameError("Логин не может быть пустым");
+      return;
+    }
+
+    if (newUsername === currentUsername) {
+      setUsernameError("Новый логин должен отличаться от текущего");
+      return;
+    }
+
+    setChangingUsername(true);
+    try {
+      const response = await fetch("/api/admin/password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: newUsername.trim(),
+          currentPassword: currentPassword,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Логин успешно изменён!");
+        setCurrentUsername(newUsername.trim());
+        setNewUsername("");
+        setCurrentPassword("");
+        setUsernameError("");
+        fetchCurrentUsername();
+      } else {
+        setUsernameError(data.message || "Ошибка изменения логина");
+      }
+    } catch (error) {
+      console.error("Error changing username:", error);
+      setUsernameError("Ошибка изменения логина");
+    } finally {
+      setChangingUsername(false);
     }
   };
 
@@ -784,7 +867,16 @@ export default function AdminPage() {
     setDocuments(newDocuments);
   };
 
-  // Login form
+  // Show loading while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <main className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[oklch(0.75_0.18_50)] border-t-transparent rounded-full animate-spin" />
+      </main>
+    );
+  }
+
+  // Login form - показываем, если не авторизован
   if (!isAuthenticated) {
     return (
       <main className="min-h-screen bg-background flex items-center justify-center">
@@ -804,18 +896,36 @@ export default function AdminPage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Логин
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Введите логин"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="bg-background border-border"
+                    autoFocus
+                    required
+                  />
+                </div>
                 <div className="relative">
+                  <label className="block text-sm font-medium mb-2">
+                    Пароль
+                  </label>
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder="Введите пароль"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="bg-background border-border pr-10"
+                    required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-9 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -852,6 +962,14 @@ export default function AdminPage() {
               Админ-панель
             </h1>
           </div>
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <LogOut className="w-4 h-4" />
+            Выйти
+          </Button>
         </div>
 
         {/* Tabs */}
@@ -2099,6 +2217,76 @@ export default function AdminPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Lock className="w-5 h-5 text-[oklch(0.75_0.18_50)]" />
+                  Смена логина
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleChangeUsername} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Текущий логин
+                    </label>
+                    <Input
+                      type="text"
+                      value={currentUsername}
+                      disabled
+                      className="bg-muted border-border"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Новый логин
+                    </label>
+                    <Input
+                      type="text"
+                      value={newUsername}
+                      onChange={(e) => setNewUsername(e.target.value)}
+                      placeholder="Введите новый логин"
+                      className="bg-background border-border"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Текущий пароль (для подтверждения)
+                    </label>
+                    <Input
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Введите текущий пароль для подтверждения"
+                      className="bg-background border-border"
+                      required
+                    />
+                  </div>
+                  {usernameError && (
+                    <p className="text-red-500 text-sm">{usernameError}</p>
+                  )}
+                  <Button
+                    type="submit"
+                    disabled={changingUsername}
+                    className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold"
+                  >
+                    {changingUsername ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                        Изменение...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        Изменить логин
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Lock className="w-5 h-5 text-[oklch(0.75_0.18_50)]" />
                   Смена пароля
                 </CardTitle>
               </CardHeader>
@@ -2176,8 +2364,8 @@ export default function AdminPage() {
               <CardContent>
                 <div className="space-y-2 text-sm text-muted-foreground">
                   <p>• Пароль должен содержать минимум 6 символов</p>
-                  <p>• Для входа в админку с главной страницы сделайте двойной клик по логотипу</p>
-                  <p>• После смены пароля используйте новый пароль для входа</p>
+                  <p>• Для входа в админку перейдите по адресу /admin</p>
+                  <p>• После смены логина или пароля используйте новые данные для входа</p>
                 </div>
               </CardContent>
             </Card>
