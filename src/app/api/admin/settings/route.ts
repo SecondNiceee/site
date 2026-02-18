@@ -36,6 +36,10 @@ interface SiteSettings {
   workingHours: {
     enabled: boolean;
   };
+  visibility: {
+    address: boolean;
+    documents: boolean;
+  };
   blocks: {
     hero: boolean;
     services: boolean;
@@ -93,6 +97,10 @@ export async function GET() {
         },
         workingHours: {
           enabled: true,
+        },
+        visibility: {
+          address: true,
+          documents: true,
         },
         blocks: {
           hero: true,

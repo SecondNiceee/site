@@ -61,6 +61,10 @@ interface SiteSettings {
   workingHours: {
     enabled: boolean;
   };
+  visibility: {
+    address: boolean;
+    documents: boolean;
+  };
   blocks: {
     hero: boolean;
     services: boolean;
@@ -82,6 +86,9 @@ export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [blockedUntil, setBlockedUntil] = useState<number | null>(null);
+  const [remainingAttempts, setRemainingAttempts] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<"portfolio" | "settings" | "documents" | "security" | "blocks" | "faq" | "services">("portfolio");
 
   // Portfolio state
@@ -236,6 +243,10 @@ export default function AdminPage() {
         if (!data.workingHours) {
           data.workingHours = { enabled: true };
         }
+        // Убеждаемся, что visibility поле присутствует
+        if (!data.visibility) {
+          data.visibility = { address: true, documents: true };
+        }
         setSettings(data);
       }
     } catch (error) {
@@ -261,6 +272,9 @@ export default function AdminPage() {
       setError("Введите логин и пароль");
       return;
     }
+    if (isBlocked) {
+      return;
+    }
     try {
       const response = await fetch("/api/admin/auth", {
         method: "POST",
@@ -275,8 +289,18 @@ export default function AdminPage() {
         setError("");
         setUsername("");
         setPassword("");
+        setIsBlocked(false);
+        setBlockedUntil(null);
+        setRemainingAttempts(null);
       } else {
         setError(data.message || "Неверный логин или пароль");
+        if (data.blocked) {
+          setIsBlocked(true);
+          setBlockedUntil(data.blockedUntil);
+          setRemainingAttempts(0);
+        } else if (data.remainingAttempts !== undefined) {
+          setRemainingAttempts(data.remainingAttempts);
+        }
       }
     } catch (error) {
       console.error("Error authenticating:", error);
@@ -478,7 +502,7 @@ export default function AdminPage() {
         setLogoUploadError(errorMessage);
       }
     } catch (error) {
-      const errorMessage = `Ошибка загрузки логотипа: ${error instanceof Error ? error.message : "Неизвестная ошибка"}`;
+      const errorMessage = `Ош��бка загрузки логотипа: ${error instanceof Error ? error.message : "Неизвестная ошибка"}`;
       console.error(errorMessage, error);
       setLogoUploadError(errorMessage);
     } finally {
@@ -930,12 +954,27 @@ export default function AdminPage() {
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-                {error && <p className="text-red-500 text-sm">{error}</p>}
+                {error && (
+                  <div className={`text-sm p-3 rounded-lg ${isBlocked ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'text-red-500'}`}>
+                    <p>{error}</p>
+                    {isBlocked && (
+                      <p className="mt-1 text-xs opacity-80">
+                        Попробуйте снова через 24 часа или обратитесь к администратору.
+                      </p>
+                    )}
+                  </div>
+                )}
+                {remainingAttempts !== null && !isBlocked && remainingAttempts <= 3 && (
+                  <p className="text-amber-500 text-xs">
+                    Внимание: осталось {remainingAttempts} {remainingAttempts === 1 ? 'попытка' : remainingAttempts <= 4 ? 'попытки' : 'попыток'} до блокировки
+                  </p>
+                )}
                 <Button
                   type="submit"
-                  className="w-full bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold"
+                  disabled={isBlocked}
+                  className="w-full bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Войти
+                  {isBlocked ? 'Доступ заблокирован' : 'Войти'}
                 </Button>
               </form>
             </CardContent>
@@ -1686,6 +1725,60 @@ export default function AdminPage() {
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Когда блок выключен, информация о режиме работы не будет отображаться в разделе контактов.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Address Visibility */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-[oklch(0.75_0.18_50)]" />
+                  Адрес
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="address-visible"
+                    checked={settings.visibility?.address ?? true}
+                    onChange={(e) => updateSettings("visibility", "address", e.target.checked)}
+                    className="w-4 h-4 rounded border-border"
+                  />
+                  <label htmlFor="address-visible" className="text-sm font-medium cursor-pointer">
+                    Показывать адрес в разделе контактов
+                  </label>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Когда выключено, адрес не будет отображаться в контактной информации на сайте.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Documents Visibility */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-[oklch(0.75_0.18_50)]" />
+                  Ссылки на документы
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="documents-visible"
+                    checked={settings.visibility?.documents ?? true}
+                    onChange={(e) => updateSettings("visibility", "documents", e.target.checked)}
+                    className="w-4 h-4 rounded border-border"
+                  />
+                  <label htmlFor="documents-visible" className="text-sm font-medium cursor-pointer">
+                    Показывать ссылки на документы (Политика конфиденциальности, Договор оферты)
+                  </label>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Когда выключено, ссылки на документы не будут отображаться в футере и форме обратной связи.
                 </p>
               </CardContent>
             </Card>

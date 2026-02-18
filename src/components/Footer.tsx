@@ -117,21 +117,23 @@ export default function Footer() {
           </div>
 
           {/* Legal */}
-          <div>
-            <h3 className="font-semibold text-foreground mb-4">Документы</h3>
-            <ul className="space-y-3">
-              {footerLinks.legal.map((link) => (
-                <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-muted-foreground hover:text-[oklch(0.75_0.18_50)] transition-colors duration-300"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {settings.visibility?.documents !== false && (
+            <div>
+              <h3 className="font-semibold text-foreground mb-4">Документы</h3>
+              <ul className="space-y-3">
+                {footerLinks.legal.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="text-muted-foreground hover:text-[oklch(0.75_0.18_50)] transition-colors duration-300"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
 
