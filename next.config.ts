@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'standalone', // Оптимизация для production
   images: {
     remotePatterns: [
       {
@@ -15,6 +16,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Для работы на reg.ru
+  poweredByHeader: false,
+  compress: true,
 };
 
 export default nextConfig;

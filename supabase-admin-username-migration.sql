@@ -10,3 +10,4 @@ ALTER TABLE admin ALTER COLUMN username SET NOT NULL;
 -- Установка значения по умолчанию для новых записей
 ALTER TABLE admin ALTER COLUMN username SET DEFAULT 'admin';
 
+
