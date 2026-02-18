@@ -34,12 +34,16 @@ export default function Contacts() {
       value: settings.contacts.email,
       href: `mailto:${settings.contacts.email}`,
     },
-    {
-      icon: MapPin,
-      label: "Адрес",
-      value: settings.contacts.address,
-      href: "#",
-    },
+    ...(settings.visibility?.address !== false
+      ? [
+          {
+            icon: MapPin,
+            label: "Адрес",
+            value: settings.contacts.address,
+            href: "#",
+          },
+        ]
+      : []),
   ];
 
   const socialLinks = [
@@ -312,15 +316,17 @@ export default function Contacts() {
                   </motion.p>
                 )}
 
-                <p className="text-xs text-muted-foreground text-center">
-                  Нажимая кнопку, вы соглашаетесь с{" "}
-                  <a
-                    href="/privacy"
-                    className="text-[oklch(0.75_0.18_50)] hover:underline"
-                  >
-                    политикой конфиденциальности
-                  </a>
-                </p>
+                {settings.visibility?.documents !== false && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    Нажимая кнопку, вы соглашаетесь с{" "}
+                    <a
+                      href="/privacy"
+                      className="text-[oklch(0.75_0.18_50)] hover:underline"
+                    >
+                      политикой конфиденциальности
+                    </a>
+                  </p>
+                )}
               </div>
             </form>
           </motion.div>
