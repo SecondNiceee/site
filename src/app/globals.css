@@ -156,6 +156,27 @@
   }
 }
 
+/* GPU acceleration for heavy visual effects */
+@layer utilities {
+  .blur-3xl,
+  [class*="blur-3xl"] {
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .gradient-text {
+    animation: none !important;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Custom scrollbar - Dark theme */
 .dark::-webkit-scrollbar {
   width: 8px;

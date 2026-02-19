@@ -318,9 +318,37 @@ export function SettingsTab({
               {"Показывать блок \"Режим работы\" в разделе контактов"}
             </label>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Когда блок выключен, информация о режиме работы не будет отображаться в разделе контактов.
-          </p>
+          {settings.workingHours?.enabled !== false && (
+            <div className="space-y-3 pt-2">
+              <div>
+                <label className="block text-sm font-medium mb-2">Будни</label>
+                <Input
+                  value={settings.workingHours?.weekdays ?? "Пн-Пт: 9:00 — 20:00"}
+                  onChange={(e) => updateSettings("workingHours", "weekdays", e.target.value)}
+                  placeholder="Пн-Пт: 9:00 — 20:00"
+                  className="bg-background border-border"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Выходные</label>
+                <Input
+                  value={settings.workingHours?.weekends ?? "Сб-Вс: 10:00 — 18:00"}
+                  onChange={(e) => updateSettings("workingHours", "weekends", e.target.value)}
+                  placeholder="Сб-Вс: 10:00 — 18:00"
+                  className="bg-background border-border"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Примечание</label>
+                <Input
+                  value={settings.workingHours?.note ?? "Срочные заявки — круглосуточно"}
+                  onChange={(e) => updateSettings("workingHours", "note", e.target.value)}
+                  placeholder="Срочные заявки — круглосуточно"
+                  className="bg-background border-border"
+                />
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

@@ -91,8 +91,8 @@ export default function Contacts() {
   return (
     <section id="contacts" className="py-24 md:py-32 relative overflow-hidden">
       {/* Background decorations */}
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl -translate-x-1/2 translate-y-1/2" />
-      <div className="absolute top-1/2 right-0 w-72 h-72 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl -translate-x-1/2 translate-y-1/2 pointer-events-none" style={{ transform: 'translate(-50%, 50%) translateZ(0)' }} />
+      <div className="absolute top-1/2 right-0 w-72 h-72 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl translate-x-1/2 pointer-events-none" style={{ transform: 'translateX(50%) translateZ(0)' }} />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header */}
@@ -186,13 +186,17 @@ export default function Contacts() {
               <div className="mt-10 p-6 rounded-2xl bg-card/50 border border-border">
                 <h3 className="font-semibold mb-3">Режим работы</h3>
                 <p className="text-muted-foreground text-sm">
-                  Пн-Пт: 9:00 — 20:00
+                  {settings.workingHours?.weekdays || "Пн-Пт: 9:00 — 20:00"}
                   <br />
-                  Сб-Вс: 10:00 — 18:00
-                  <br />
-                  <span className="text-[oklch(0.75_0.18_50)]">
-                    Срочные заявки — круглосуточно
-                  </span>
+                  {settings.workingHours?.weekends || "Сб-Вс: 10:00 — 18:00"}
+                  {(settings.workingHours?.note) && (
+                    <>
+                      <br />
+                      <span className="text-[oklch(0.75_0.18_50)]">
+                        {settings.workingHours.note}
+                      </span>
+                    </>
+                  )}
                 </p>
               </div>
             )}

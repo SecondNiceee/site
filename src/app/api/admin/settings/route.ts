@@ -35,6 +35,9 @@ interface SiteSettings {
   };
   workingHours: {
     enabled: boolean;
+    weekdays: string;
+    weekends: string;
+    note: string;
   };
   visibility: {
     address: boolean;
@@ -85,6 +88,9 @@ const defaultSettings: SiteSettings = {
   },
   workingHours: {
     enabled: true,
+    weekdays: "Пн-Пт: 9:00 — 20:00",
+    weekends: "Сб-Вс: 10:00 — 18:00",
+    note: "Срочные заявки — круглосуточно",
   },
   visibility: {
     address: true,

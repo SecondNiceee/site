@@ -14,7 +14,7 @@ import Link from "next/link";
 const navLinks = [
   { href: "#services", label: "Услуги", blockKey: "services" },
   { href: "#about", label: "О нас", blockKey: "about" },
-  { href: "#portfolio", label: "Кейсы", blockKey: "portfolio" },
+  { href: "#portfolio", label: "Портфолио", blockKey: "portfolio" },
   { href: "#how-it-works", label: "Как работаем", blockKey: "howItWorks" },
   { href: "#faq", label: "FAQ", blockKey: "faq" },
   { href: "#contacts", label: "Контакты", blockKey: "contacts" },
