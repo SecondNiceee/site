@@ -77,8 +77,8 @@ ${message ? `💬 *Сообщение:* ${escapeMarkdown(message)}` : ""}
   }
 }
 
-// Escape special characters for Telegram Markdown
+// Escape special characters for Telegram Markdown v1
 function escapeMarkdown(text: string): string {
-  return text.replace(/[_*[\]()~`>#+=|{}.!-]/g, "\\$&");
+  return text.replace(/[_*`\[]/g, "\\$&");
 }
 

@@ -166,6 +166,36 @@ export function SecurityTab({
             <p>{"• Пароль должен содержать минимум 6 символов"}</p>
             <p>{"• Для входа в админку перейдите по адресу /admin"}</p>
             <p>{"• После смены логина или пароля используйте новые данные для входа"}</p>
+            <p>{"• После 5 неудачных попыток входа доступ блокируется на 24 часа"}</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-card border-border border-amber-500/30">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-amber-500">
+            <Lock className="w-5 h-5" />
+            {"Если вы забыли пароль"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <p>
+              {"Если вы забыли пароль от админ-панели, выполните следующие шаги:"}
+            </p>
+            <ol className="list-decimal list-inside space-y-2 ml-2">
+              <li>{"Подключитесь к базе данных PostgreSQL через терминал или pgAdmin"}</li>
+              <li>
+                {"Выполните SQL-запрос для сброса пароля:"}
+                <code className="block mt-1 p-2 bg-secondary rounded text-xs font-mono">
+                  {"UPDATE admin SET password = 'новый_пароль' WHERE id = 1;"}
+                </code>
+              </li>
+              <li>{"После этого войдите в админку с новым паролем и сразу смените его на надёжный"}</li>
+            </ol>
+            <p className="text-xs mt-3 pt-3 border-t border-border">
+              {"Если доступ заблокирован из-за превышения попыток входа, подождите 24 часа или перезапустите сервер приложения для сброса счётчика попыток."}
+            </p>
           </div>
         </CardContent>
       </Card>

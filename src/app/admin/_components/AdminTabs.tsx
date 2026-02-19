@@ -21,12 +21,12 @@ const tabs: { key: AdminTab; label: string; icon: React.ElementType }[] = [
 
 export function AdminTabs({ activeTab, onTabChange }: AdminTabsProps) {
   return (
-    <div className="flex gap-2 mb-8 border-b border-border">
+    <div className="flex gap-2 mb-8 border-b border-border overflow-x-auto scrollbar-hide">
       {tabs.map(({ key, label, icon: Icon }) => (
         <button
           key={key}
           onClick={() => onTabChange(key)}
-          className={`px-6 py-3 font-medium transition-colors relative ${
+          className={`px-6 py-3 font-medium transition-colors relative whitespace-nowrap ${
             activeTab === key
               ? "text-[oklch(0.75_0.18_50)]"
               : "text-muted-foreground hover:text-foreground"
