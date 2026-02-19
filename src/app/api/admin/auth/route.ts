@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import pool from "@/lib/db";
 
 // Rate limiting: 5 attempts per IP, then block for 24 hours
 const MAX_ATTEMPTS = 5;
@@ -29,11 +29,9 @@ function getClientIP(request: NextRequest): string {
 function cleanupExpiredEntries() {
   const now = Date.now();
   for (const [ip, attempt] of loginAttempts.entries()) {
-    // Remove entries where block has expired and we can reset
     if (attempt.blockedUntil && now > attempt.blockedUntil) {
       loginAttempts.delete(ip);
     }
-    // Remove old entries that are not blocked and older than 24h
     if (!attempt.blockedUntil && now - attempt.firstAttempt > BLOCK_DURATION_MS) {
       loginAttempts.delete(ip);
     }
@@ -49,13 +47,11 @@ function checkRateLimit(ip: string): { blocked: boolean; remainingAttempts: numb
     return { blocked: false, remainingAttempts: MAX_ATTEMPTS, blockedUntil: null };
   }
   
-  // Check if currently blocked
   if (attempt.blockedUntil) {
     const now = Date.now();
     if (now < attempt.blockedUntil) {
       return { blocked: true, remainingAttempts: 0, blockedUntil: attempt.blockedUntil };
     }
-    // Block expired, reset
     loginAttempts.delete(ip);
     return { blocked: false, remainingAttempts: MAX_ATTEMPTS, blockedUntil: null };
   }
@@ -104,7 +100,6 @@ export async function POST(request: NextRequest) {
   try {
     const ip = getClientIP(request);
     
-    // Check if IP is blocked
     const rateLimit = checkRateLimit(ip);
     if (rateLimit.blocked) {
       const timeRemaining = formatTimeRemaining(rateLimit.blockedUntil!);
@@ -127,39 +122,25 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
-    if (!supabaseAdmin) {
-      return NextResponse.json(
-        { success: false, message: "Supabase не настроен" },
-        { status: 500 }
-      );
-    }
 
     // Получаем данные администратора из БД
-    const { data, error } = await supabaseAdmin
-      .from("admin")
-      .select("*")
-      .limit(1)
-      .single();
+    const { rows } = await pool.query("SELECT * FROM admin LIMIT 1");
     
-    if (error || !data) {
-      console.error("Error fetching admin:", error);
+    if (rows.length === 0) {
+      console.error("No admin record found in database");
       return NextResponse.json(
         { success: false, message: "Ошибка аутентификации. Проверьте, что таблица admin существует и содержит данные." },
         { status: 500 }
       );
     }
     
-    // Если username отсутствует в БД, используем значение по умолчанию "admin"
+    const data = rows[0];
     const dbUsername = data.username || "admin";
     
-    // Проверяем логин и пароль
     if (username === dbUsername && password === data.password) {
-      // Success - reset attempts for this IP
       resetAttempts(ip);
       return NextResponse.json({ success: true });
     } else {
-      // Failed - record attempt
       const result = recordFailedAttempt(ip);
       
       if (result.blocked) {

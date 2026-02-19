@@ -1,40 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase, supabaseAdmin } from "@/lib/supabase";
-
-interface ServiceItem {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  features: string[];
-  order_index?: number;
-  createdAt?: string;
-}
+import pool from "@/lib/db";
 
 // GET - Получить все услуги
 export async function GET() {
   try {
-    const { data, error } = await supabase
-      .from("services")
-      .select("*")
-      .order("order_index", { ascending: true });
+    const { rows } = await pool.query(
+      "SELECT * FROM services ORDER BY order_index ASC"
+    );
 
-    if (error) {
-      console.error("Error reading services:", error);
-      // Если таблица не существует, возвращаем пустой массив вместо ошибки
-      if (error.code === "42P01" || error.message?.includes("does not exist")) {
-        console.log("Services table does not exist yet. Please run the SQL migration.");
-        return NextResponse.json({ items: [] });
-      }
-      return NextResponse.json({ error: "Failed to read data" }, { status: 500 });
-    }
-
-    const items = (data || []).map((item) => {
+    const items = rows.map((item) => {
       // Обработка features - может быть массивом или JSONB строкой
       let features: string[] = [];
       if (Array.isArray(item.features)) {
         features = item.features;
-      } else if (typeof item.features === 'string') {
+      } else if (typeof item.features === "string") {
         try {
           features = JSON.parse(item.features);
         } catch {
@@ -58,7 +37,6 @@ export async function GET() {
     return NextResponse.json({ items });
   } catch (error) {
     console.error("Error reading services:", error);
-    // Возвращаем пустой массив вместо ошибки, чтобы компонент мог показать fallback
     return NextResponse.json({ items: [] });
   }
 }
@@ -66,39 +44,28 @@ export async function GET() {
 // POST - Создать новую услугу
 export async function POST(request: NextRequest) {
   try {
-    if (!supabaseAdmin) {
-      return NextResponse.json(
-        { error: "Supabase не настроен" },
-        { status: 500 }
-      );
-    }
+    const newItem = await request.json();
 
-    const newItem: ServiceItem = await request.json();
-
-    const { data, error } = await supabaseAdmin
-      .from("services")
-      .insert({
-        id: newItem.id,
-        title: newItem.title,
-        description: newItem.description,
-        icon: newItem.icon,
-        features: newItem.features || [],
-        order_index: newItem.order_index || 0,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Error creating service item:", error);
-      return NextResponse.json({ error: "Failed to create item" }, { status: 500 });
-    }
+    const { rows } = await pool.query(
+      `INSERT INTO services (id, title, description, icon, features, order_index)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING *`,
+      [
+        newItem.id,
+        newItem.title,
+        newItem.description,
+        newItem.icon,
+        JSON.stringify(newItem.features || []),
+        newItem.order_index || 0,
+      ]
+    );
 
     return NextResponse.json({
       success: true,
       item: {
-        ...data,
-        features: data.features || [],
-        createdAt: data.created_at,
+        ...rows[0],
+        features: rows[0].features || [],
+        createdAt: rows[0].created_at,
       },
     });
   } catch (error) {
@@ -110,43 +77,33 @@ export async function POST(request: NextRequest) {
 // PUT - Обновить услугу
 export async function PUT(request: NextRequest) {
   try {
-    if (!supabaseAdmin) {
-      return NextResponse.json(
-        { error: "Supabase не настроен" },
-        { status: 500 }
-      );
-    }
+    const updatedItem = await request.json();
 
-    const updatedItem: ServiceItem = await request.json();
+    const { rows } = await pool.query(
+      `UPDATE services
+       SET title = $1, description = $2, icon = $3, features = $4, order_index = $5
+       WHERE id = $6
+       RETURNING *`,
+      [
+        updatedItem.title,
+        updatedItem.description,
+        updatedItem.icon,
+        JSON.stringify(updatedItem.features || []),
+        updatedItem.order_index || 0,
+        updatedItem.id,
+      ]
+    );
 
-    const { data, error } = await supabaseAdmin
-      .from("services")
-      .update({
-        title: updatedItem.title,
-        description: updatedItem.description,
-        icon: updatedItem.icon,
-        features: updatedItem.features || [],
-        order_index: updatedItem.order_index || 0,
-      })
-      .eq("id", updatedItem.id)
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Error updating service item:", error);
-      return NextResponse.json({ error: "Failed to update item" }, { status: 500 });
-    }
-
-    if (!data) {
+    if (rows.length === 0) {
       return NextResponse.json({ error: "Item not found" }, { status: 404 });
     }
 
     return NextResponse.json({
       success: true,
       item: {
-        ...data,
-        features: data.features || [],
-        createdAt: data.created_at,
+        ...rows[0],
+        features: rows[0].features || [],
+        createdAt: rows[0].created_at,
       },
     });
   } catch (error) {
@@ -158,24 +115,9 @@ export async function PUT(request: NextRequest) {
 // DELETE - Удалить услугу
 export async function DELETE(request: NextRequest) {
   try {
-    if (!supabaseAdmin) {
-      return NextResponse.json(
-        { error: "Supabase не настроен" },
-        { status: 500 }
-      );
-    }
-
     const { id } = await request.json();
 
-    const { error } = await supabaseAdmin
-      .from("services")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      console.error("Error deleting service item:", error);
-      return NextResponse.json({ error: "Failed to delete item" }, { status: 500 });
-    }
+    await pool.query("DELETE FROM services WHERE id = $1", [id]);
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -183,4 +125,3 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: "Failed to delete item" }, { status: 500 });
   }
 }
-

@@ -1,33 +1,22 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import pool from "@/lib/db";
 
 export async function GET() {
   try {
-    if (!supabaseAdmin) {
-      return NextResponse.json(
-        { message: "Supabase не настроен" },
-        { status: 500 }
-      );
-    }
+    const { rows } = await pool.query(
+      "SELECT username, password FROM admin LIMIT 1"
+    );
 
-    const { data, error } = await supabaseAdmin
-      .from("admin")
-      .select("username, password")
-      .limit(1)
-      .single();
-
-    if (error) {
-      console.error("Error reading admin config:", error);
+    if (rows.length === 0) {
       return NextResponse.json(
         { message: "Error reading admin config" },
         { status: 500 }
       );
     }
 
-    // Возвращаем только username, пароль не возвращаем
-    return NextResponse.json({ 
-      username: data?.username || "admin",
-      exists: !!data?.password 
+    return NextResponse.json({
+      username: rows[0].username || "admin",
+      exists: !!rows[0].password,
     });
   } catch (error) {
     console.error("Error reading admin config:", error);
@@ -40,30 +29,22 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    if (!supabaseAdmin) {
-      return NextResponse.json(
-        { message: "Supabase не настроен" },
-        { status: 500 }
-      );
-    }
-
     const { username, password, currentPassword } = await request.json();
-    
+
     // Получаем текущие данные из БД
-    const { data: adminData, error: fetchError } = await supabaseAdmin
-      .from("admin")
-      .select("id, username, password")
-      .limit(1)
-      .single();
-    
-    if (fetchError || !adminData) {
-      console.error("Error fetching admin:", fetchError);
+    const { rows } = await pool.query(
+      "SELECT id, username, password FROM admin LIMIT 1"
+    );
+
+    if (rows.length === 0) {
       return NextResponse.json(
         { message: "Ошибка получения данных администратора" },
         { status: 500 }
       );
     }
-    
+
+    const adminData = rows[0];
+
     // Проверяем текущий пароль, если он указан
     if (currentPassword && currentPassword !== adminData.password) {
       return NextResponse.json(
@@ -71,38 +52,43 @@ export async function POST(request: Request) {
         { status: 401 }
       );
     }
-    
-    // Подготавливаем объект для обновления
-    const updateData: { password?: string; username?: string } = {};
-    
+
+    // Подготавливаем обновление
+    const setClauses: string[] = [];
+    const values: string[] = [];
+    let paramIndex = 1;
+
     if (password) {
-      updateData.password = password;
+      setClauses.push(`password = $${paramIndex}`);
+      values.push(password);
+      paramIndex++;
     }
-    
+
     if (username) {
-      updateData.username = username;
+      setClauses.push(`username = $${paramIndex}`);
+      values.push(username);
+      paramIndex++;
     }
-    
-    // Обновляем данные
-    const { error: updateError } = await supabaseAdmin
-      .from("admin")
-      .update(updateData)
-      .eq("id", adminData.id);
-    
-    if (updateError) {
-      console.error("Error updating admin:", updateError);
+
+    if (setClauses.length === 0) {
       return NextResponse.json(
-        { message: "Ошибка обновления данных" },
-        { status: 500 }
+        { message: "Нет данных для обновления" },
+        { status: 400 }
       );
     }
-    
+
+    values.push(adminData.id);
+    await pool.query(
+      `UPDATE admin SET ${setClauses.join(", ")} WHERE id = $${paramIndex}`,
+      values
+    );
+
     const updatedFields = [];
     if (password) updatedFields.push("пароль");
     if (username) updatedFields.push("логин");
-    
-    return NextResponse.json({ 
-      message: `${updatedFields.join(" и ")} успешно ${updatedFields.length > 1 ? "обновлены" : "обновлен"}` 
+
+    return NextResponse.json({
+      message: `${updatedFields.join(" и ")} успешно ${updatedFields.length > 1 ? "обновлены" : "обновлен"}`,
     });
   } catch (error) {
     console.error("Error updating admin:", error);
@@ -112,4 +98,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
