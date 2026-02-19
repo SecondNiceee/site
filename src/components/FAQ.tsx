@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useReveal } from "@/hooks/useReveal";
 
 interface FAQItem {
   id: string;
@@ -27,9 +28,10 @@ export default function FAQ() {
   const [editingItem, setEditingItem] = useState<FAQItem | null>(null);
   const [editForm, setEditForm] = useState({ question: "", answer: "" });
   const [isSaving, setIsSaving] = useState(false);
+  const leftRef = useReveal<HTMLDivElement>();
+  const rightRef = useReveal<HTMLDivElement>();
 
   useEffect(() => {
-    // Проверяем авторизацию
     const authStatus = sessionStorage.getItem("admin_authenticated");
     setIsAuthenticated(authStatus === "true");
 
@@ -71,7 +73,6 @@ export default function FAQ() {
       });
 
       if (response.ok) {
-        // Обновляем локальное состояние
         setFaqData((prev) =>
           prev.map((item) =>
             item.id === editingItem.id
@@ -108,66 +109,40 @@ export default function FAQ() {
       </section>
     );
   }
+
   return (
     <section id="faq" className="py-24 md:py-32 relative overflow-hidden bg-card/50">
-      {/* Background pattern */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
+      {/* Background -- reduced blur */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-2xl translate-x-1/2 -translate-y-1/2" />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
           {/* Left Column - Header */}
-          <div className="lg:sticky lg:top-32 lg:self-start">
-            <motion.span
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
-            >
+          <div ref={leftRef} className="reveal fade-up lg:sticky lg:top-32 lg:self-start">
+            <span className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4">
               Вопросы и ответы
-            </motion.span>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
-            >
+            </span>
+            <h2 className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6">
               Частые <span className="gradient-text">вопросы</span>
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-muted-foreground text-lg mb-8"
-            >
+            </h2>
+            <p className="text-muted-foreground text-lg mb-8">
               Ответы на популярные вопросы о нашей работе. Не нашли ответ?
               Свяжитесь с нами!
-            </motion.p>
-            <motion.a
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+            </p>
+            <a
               href="#contacts"
               className="inline-flex items-center gap-2 text-[oklch(0.75_0.18_50)] hover:text-[oklch(0.85_0.18_50)] font-medium transition-colors"
             >
               Задать вопрос
-              <span>→</span>
-            </motion.a>
+              <span>{"→"}</span>
+            </a>
           </div>
 
           {/* Right Column - Accordion */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+          <div ref={rightRef} className="reveal fade-up">
             <Accordion type="single" collapsible className="space-y-4">
               {faqData.length > 0 ? (
-                faqData.map((item, index) => (
+                faqData.map((item) => (
                   <AccordionItem
                     key={item.id}
                     value={`item-${item.id}`}
@@ -200,11 +175,11 @@ export default function FAQ() {
                 </p>
               )}
             </Accordion>
-          </motion.div>
+          </div>
         </div>
       </div>
 
-      {/* Edit Modal */}
+      {/* Edit Modal -- keep AnimatePresence only here since it's user-triggered */}
       <AnimatePresence>
         {editingItem && (
           <motion.div
@@ -215,9 +190,10 @@ export default function FAQ() {
             onClick={handleCancel}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
               className="bg-card border border-border rounded-2xl p-8 max-w-2xl w-full mx-4"
             >
@@ -225,38 +201,26 @@ export default function FAQ() {
                 <h2 className="font-[var(--font-oswald)] text-2xl font-bold uppercase">
                   Редактирование вопроса
                 </h2>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleCancel}
-                >
+                <Button variant="ghost" size="icon" onClick={handleCancel}>
                   <X className="w-5 h-5" />
                 </Button>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Вопрос
-                  </label>
+                  <label className="block text-sm font-medium mb-2">Вопрос</label>
                   <Input
                     value={editForm.question}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, question: e.target.value })
-                    }
+                    onChange={(e) => setEditForm({ ...editForm, question: e.target.value })}
                     className="bg-background border-border"
                     placeholder="Введите вопрос"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Ответ
-                  </label>
+                  <label className="block text-sm font-medium mb-2">Ответ</label>
                   <Textarea
                     value={editForm.answer}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, answer: e.target.value })
-                    }
+                    onChange={(e) => setEditForm({ ...editForm, answer: e.target.value })}
                     rows={6}
                     className="bg-background border-border"
                     placeholder="Введите ответ"
@@ -273,11 +237,7 @@ export default function FAQ() {
                   <Save className="w-4 h-4 mr-2" />
                   {isSaving ? "Сохранение..." : "Сохранить"}
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleCancel}
-                  className="flex-1"
-                >
+                <Button variant="outline" onClick={handleCancel} className="flex-1">
                   Отмена
                 </Button>
               </div>
@@ -288,4 +248,3 @@ export default function FAQ() {
     </section>
   );
 }
-

@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, Send, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useSettings } from "@/hooks/useSettings";
+import { useReveal } from "@/hooks/useReveal";
 
 export default function Contacts() {
   const { settings } = useSettings();
@@ -17,8 +17,10 @@ export default function Contacts() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+  const headerRef = useReveal<HTMLDivElement>();
+  const leftRef = useReveal<HTMLDivElement>();
+  const rightRef = useReveal<HTMLDivElement>();
 
-  // Format phone for tel: link
   const phoneLink = settings.contacts.phone.replace(/[^+\d]/g, "");
 
   const contactInfo = [
@@ -90,51 +92,28 @@ export default function Contacts() {
 
   return (
     <section id="contacts" className="py-24 md:py-32 relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl -translate-x-1/2 translate-y-1/2 pointer-events-none" style={{ transform: 'translate(-50%, 50%) translateZ(0)' }} />
-      <div className="absolute top-1/2 right-0 w-72 h-72 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl translate-x-1/2 pointer-events-none" style={{ transform: 'translateX(50%) translateZ(0)' }} />
+      {/* Background decorations -- reduced blur */}
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-2xl -translate-x-1/2 translate-y-1/2 pointer-events-none" style={{ transform: 'translate(-50%, 50%) translateZ(0)' }} />
+      <div className="absolute top-1/2 right-0 w-72 h-72 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-2xl translate-x-1/2 pointer-events-none" style={{ transform: 'translateX(50%) translateZ(0)' }} />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16 md:mb-20">
-          <motion.span
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
-          >
+        <div ref={headerRef} className="reveal fade-up text-center mb-16 md:mb-20">
+          <span className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4">
             Контакты
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
-          >
+          </span>
+          <h2 className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6">
             Свяжитесь <span className="gradient-text">с нами</span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-muted-foreground text-lg max-w-2xl mx-auto"
-          >
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Оставьте заявку или свяжитесь с нами любым удобным способом.
             Мы ответим в течение 30 минут!
-          </motion.p>
+          </p>
         </div>
 
         <div className={`grid grid-cols-1 ${settings.form?.enabled !== false ? 'lg:grid-cols-2' : 'lg:grid-cols-1 max-w-2xl mx-auto'} gap-12 lg:gap-20`}>
           {/* Contact Info */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+          <div ref={leftRef} className="reveal fade-left">
             {/* Contact cards */}
             <div className="space-y-4 mb-10">
               {contactInfo.map((item) => (
@@ -164,18 +143,16 @@ export default function Contacts() {
                 </p>
                 <div className="flex gap-4">
                   {socialLinks.map((social) => (
-                    <motion.a
+                    <a
                       key={social.name}
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`flex items-center gap-3 px-6 py-3 rounded-full ${social.color} text-white font-medium transition-all duration-300 hover:shadow-lg`}
+                      className={`flex items-center gap-3 px-6 py-3 rounded-full ${social.color} text-white font-medium transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95`}
                     >
                       <social.icon className="w-5 h-5" />
                       {social.name}
-                    </motion.a>
+                    </a>
                   ))}
                 </div>
               </div>
@@ -200,140 +177,104 @@ export default function Contacts() {
                 </p>
               </div>
             )}
-          </motion.div>
+          </div>
 
           {/* Contact Form */}
           {settings.form?.enabled !== false && (
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
+            <div ref={rightRef} className="reveal fade-right">
               <form
                 onSubmit={handleSubmit}
                 className="p-8 md:p-10 rounded-3xl bg-card border border-border"
               >
-              <h3 className="font-[var(--font-oswald)] text-2xl font-bold uppercase mb-2">
-                Оставить заявку
-              </h3>
-              <p className="text-muted-foreground text-sm mb-8">
-                Заполните форму и мы свяжемся с вами в ближайшее время
-              </p>
+                <h3 className="font-[var(--font-oswald)] text-2xl font-bold uppercase mb-2">
+                  Оставить заявку
+                </h3>
+                <p className="text-muted-foreground text-sm mb-8">
+                  Заполните форму и мы свяжемся с вами в ближайшее время
+                </p>
 
-              <div className="space-y-6">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium mb-2"
+                <div className="space-y-6">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium mb-2">
+                      Ваше имя
+                    </label>
+                    <Input
+                      id="name"
+                      type="text"
+                      placeholder="Иван Иванов"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                      className="bg-background border-border focus:border-[oklch(0.75_0.18_50)] h-12"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium mb-2">
+                      Телефон
+                    </label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+7 (___) ___-__-__"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      required
+                      className="bg-background border-border focus:border-[oklch(0.75_0.18_50)] h-12"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="message" className="block text-sm font-medium mb-2">
+                      Сообщение (опционально)
+                    </label>
+                    <Textarea
+                      id="message"
+                      placeholder="Опишите вашу задачу..."
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      rows={4}
+                      className="bg-background border-border focus:border-[oklch(0.75_0.18_50)] resize-none"
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-bold h-14 text-lg"
                   >
-                    Ваше имя
-                  </label>
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="Иван Иванов"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    required
-                    className="bg-background border-border focus:border-[oklch(0.75_0.18_50)] h-12"
-                  />
-                </div>
+                    {isSubmitting ? (
+                      <span className="flex items-center gap-2">
+                        <span className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                        Отправка...
+                      </span>
+                    ) : (
+                      "Отправить заявку"
+                    )}
+                  </Button>
 
-                <div>
-                  <label
-                    htmlFor="phone"
-                    className="block text-sm font-medium mb-2"
-                  >
-                    Телефон
-                  </label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="+7 (___) ___-__-__"
-                    value={formData.phone}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phone: e.target.value })
-                    }
-                    required
-                    className="bg-background border-border focus:border-[oklch(0.75_0.18_50)] h-12"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium mb-2"
-                  >
-                    Сообщение (опционально)
-                  </label>
-                  <Textarea
-                    id="message"
-                    placeholder="Опишите вашу задачу..."
-                    value={formData.message}
-                    onChange={(e) =>
-                      setFormData({ ...formData, message: e.target.value })
-                    }
-                    rows={4}
-                    className="bg-background border-border focus:border-[oklch(0.75_0.18_50)] resize-none"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-bold h-14 text-lg"
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center gap-2">
-                      <motion.span
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full"
-                      />
-                      Отправка...
-                    </span>
-                  ) : (
-                    "Отправить заявку"
+                  {submitStatus === "success" && (
+                    <p className="text-green-500 text-center animate-in fade-in slide-in-from-bottom-2">
+                      Заявка успешно отправлена! Мы скоро свяжемся с вами.
+                    </p>
                   )}
-                </Button>
+                  {submitStatus === "error" && (
+                    <p className="text-red-500 text-center animate-in fade-in slide-in-from-bottom-2">
+                      Ошибка отправки. Попробуйте позже или свяжитесь по телефону.
+                    </p>
+                  )}
 
-                {/* Status messages */}
-                {submitStatus === "success" && (
-                  <motion.p
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-green-500 text-center"
-                  >
-                    ✓ Заявка успешно отправлена! Мы скоро свяжемся с вами.
-                  </motion.p>
-                )}
-                {submitStatus === "error" && (
-                  <motion.p
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-red-500 text-center"
-                  >
-                    Ошибка отправки. Попробуйте позже или свяжитесь по телефону.
-                  </motion.p>
-                )}
-
-                {settings.visibility?.documents !== false && (
-                  <p className="text-xs text-muted-foreground text-center">
-                    Нажимая кнопку, вы соглашаетесь с{" "}
-                    <a
-                      href="/privacy"
-                      className="text-[oklch(0.75_0.18_50)] hover:underline"
-                    >
-                      политикой конфиденциальности
-                    </a>
-                  </p>
-                )}
-              </div>
-            </form>
-          </motion.div>
+                  {settings.visibility?.documents !== false && (
+                    <p className="text-xs text-muted-foreground text-center">
+                      {"Нажимая кнопку, вы соглашаетесь с "}
+                      <a href="/privacy" className="text-[oklch(0.75_0.18_50)] hover:underline">
+                        политикой конфиденциальности
+                      </a>
+                    </p>
+                  )}
+                </div>
+              </form>
+            </div>
           )}
         </div>
       </div>
