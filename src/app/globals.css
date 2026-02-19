@@ -156,6 +156,114 @@
   }
 }
 
+/* Page load fade-in animation */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-down {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes arrow-bounce {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(5px); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out both;
+}
+
+.animate-fade-in-scale {
+  animation: fade-in-scale 1.2s ease-out both;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.6s ease-out both;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out both;
+}
+
+.animate-arrow-bounce {
+  animation: arrow-bounce 1.5s ease-in-out infinite;
+}
+
+/* Hover/active utility for interactive elements */
+.hover-scale {
+  transition: transform 0.2s ease;
+}
+.hover-scale:hover {
+  transform: scale(1.1);
+}
+.hover-scale:active {
+  transform: scale(0.95);
+}
+
+.hover-lift {
+  transition: transform 0.2s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-3px);
+}
+.hover-lift:active {
+  transform: scale(0.95);
+}
+
+.hover-scale-subtle {
+  transition: transform 0.2s ease;
+}
+.hover-scale-subtle:hover {
+  transform: scale(1.05);
+}
+.hover-scale-subtle:active {
+  transform: scale(0.95);
+}
+
+.hover-scale-micro {
+  transition: transform 0.2s ease;
+}
+.hover-scale-micro:hover {
+  transform: scale(1.02);
+}
+.hover-scale-micro:active {
+  transform: scale(0.98);
+}
+
 /* GPU acceleration for heavy visual effects */
 @layer utilities {
   .blur-3xl,

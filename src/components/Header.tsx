@@ -1,15 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Phone, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useSettings } from "@/hooks/useSettings";
 import { useTheme } from "@/components/ThemeProvider";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "#services", label: "Услуги", blockKey: "services" },
@@ -57,15 +56,12 @@ export default function Header() {
     setIsMobileMenuOpen(false);
     
     if (isHomePage) {
-      // На главной странице - скроллим к секции
       const element = document.querySelector(href);
       if (element) {
         element.scrollIntoView({ behavior: "smooth" });
       }
     } else {
-      // На других страницах - переходим на главную с якорем
       router.push(`/${href}`);
-      // После перехода скроллим к секции
       setTimeout(() => {
         const element = document.querySelector(href);
         if (element) {
@@ -75,27 +71,22 @@ export default function Header() {
     }
   };
 
-
   // Format phone for tel: link
   const phoneLink = settings.contacts.phone.replace(/[^+\d]/g, "");
 
   // Logo based on settings or theme fallback
-  const showLogo = settings.logo?.enabled !== false; // По умолчанию показываем
+  const showLogo = settings.logo?.enabled !== false;
   const logoSrc = settings.logo?.url
     ? settings.logo.url
     : theme === "dark" ? "/logo_white.png" : "/logo_black.png";
 
   return (
     <>
-      <motion.header
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? "glass py-3"
-            : "bg-transparent py-5"
-        }`}
+      <header
+        className={cn(
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-300 animate-slide-down",
+          isScrolled ? "glass py-3" : "bg-transparent py-5"
+        )}
         style={{ willChange: 'background-color, backdrop-filter' }}
       >
         <div className="container mx-auto px-4 lg:px-8">
@@ -105,11 +96,7 @@ export default function Header() {
               href="/"
               className="flex items-center gap-3"
             >
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-3"
-              >
+              <div className="flex items-center gap-3 hover-scale-micro">
                 {showLogo && (
                   <Image
                     src={logoSrc}
@@ -127,32 +114,29 @@ export default function Header() {
                     {" "}Профиль
                   </span>
                 </div>
-              </motion.div>
+              </div>
             </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8">
               {visibleNavLinks.map((link) => (
-                <motion.button
+                <button
                   key={link.href}
                   onClick={() => scrollToSection(link.href)}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors relative group"
-                  whileHover={{ y: -2 }}
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-200 relative group hover:-translate-y-0.5"
                 >
                   {link.label}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[oklch(0.75_0.18_50)] transition-all duration-300 group-hover:w-full" />
-                </motion.button>
+                </button>
               ))}
             </nav>
 
             {/* Desktop CTA */}
             <div className="hidden lg:flex items-center gap-4">
               {/* Theme Toggle */}
-              <motion.button
+              <button
                 onClick={toggleTheme}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="p-2 rounded-full hover:bg-secondary transition-colors"
+                className="p-2 rounded-full hover:bg-secondary transition-colors hover-scale"
                 title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
               >
                 {theme === "dark" ? (
@@ -160,7 +144,7 @@ export default function Header() {
                 ) : (
                   <Moon className="w-5 h-5 text-[oklch(0.75_0.18_50)]" />
                 )}
-              </motion.button>
+              </button>
 
               <a
                 href={`tel:${phoneLink}`}
@@ -182,91 +166,75 @@ export default function Header() {
             {/* Mobile Right Side */}
             <div className="flex items-center gap-2 lg:hidden">
               {/* Theme Toggle - Mobile */}
-              <motion.button
+              <button
                 onClick={toggleTheme}
-                whileTap={{ scale: 0.9 }}
-                className="p-2 rounded-full hover:bg-secondary transition-colors"
+                className="p-2 rounded-full hover:bg-secondary transition-colors active:scale-90"
               >
                 {theme === "dark" ? (
                   <Sun className="w-5 h-5 text-[oklch(0.75_0.18_50)]" />
                 ) : (
                   <Moon className="w-5 h-5 text-[oklch(0.75_0.18_50)]" />
                 )}
-              </motion.button>
+              </button>
 
               {/* Mobile Menu Button */}
-              <motion.button
-                whileTap={{ scale: 0.95 }}
+              <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2"
+                className="p-2 active:scale-95 transition-transform"
               >
                 {isMobileMenuOpen ? (
                   <X className="w-6 h-6" />
                 ) : (
                   <Menu className="w-6 h-6" />
                 )}
-              </motion.button>
+              </button>
             </div>
           </div>
         </div>
-      </motion.header>
+      </header>
 
       {/* Mobile Menu */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 lg:hidden"
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden animate-fade-in" style={{ animationDuration: "0.2s" }}>
+          <div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <nav
+            className="absolute top-0 right-0 h-full w-[80%] max-w-sm bg-background border-l border-border p-8 pt-24 animate-slide-in-right"
           >
-            <div
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
-            <motion.nav
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="absolute top-0 right-0 h-full w-[80%] max-w-sm bg-background border-l border-border p-8 pt-24"
-            >
-              <div className="flex flex-col gap-6">
-                {visibleNavLinks.map((link, index) => (
-                  <motion.button
-                    key={link.href}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    onClick={() => scrollToSection(link.href)}
-                    className="text-lg font-medium text-left hover:text-[oklch(0.75_0.18_50)] transition-colors"
-                  >
-                    {link.label}
-                  </motion.button>
-                ))}
-                <hr className="border-border my-4" />
-                <a
-                  href={`tel:${phoneLink}`}
-                  className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+            <div className="flex flex-col gap-6">
+              {visibleNavLinks.map((link, index) => (
+                <button
+                  key={link.href}
+                  onClick={() => scrollToSection(link.href)}
+                  className="text-lg font-medium text-left hover:text-[oklch(0.75_0.18_50)] transition-colors animate-fade-in-up"
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <Phone className="w-5 h-5" />
-                  <span>{settings.contacts.phone}</span>
-                </a>
-                {blocks.contacts && (
-                  <Button
-                    onClick={() => scrollToSection("#contacts")}
-                    className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold w-full mt-4"
-                    size="lg"
-                  >
-                    Связаться
-                  </Button>
-                )}
-              </div>
-            </motion.nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  {link.label}
+                </button>
+              ))}
+              <hr className="border-border my-4" />
+              <a
+                href={`tel:${phoneLink}`}
+                className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Phone className="w-5 h-5" />
+                <span>{settings.contacts.phone}</span>
+              </a>
+              {blocks.contacts && (
+                <Button
+                  onClick={() => scrollToSection("#contacts")}
+                  className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold w-full mt-4"
+                  size="lg"
+                >
+                  Связаться
+                </Button>
+              )}
+            </div>
+          </nav>
+        </div>
+      )}
 
     </>
   );

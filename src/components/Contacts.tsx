@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, Send, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useSettings } from "@/hooks/useSettings";
+import AnimateOnScroll from "@/components/AnimateOnScroll";
 
 export default function Contacts() {
   const { settings } = useSettings();
@@ -97,44 +97,32 @@ export default function Contacts() {
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16 md:mb-20">
-          <motion.span
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+          <AnimateOnScroll
+            as="span"
             className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
           >
             Контакты
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+          </AnimateOnScroll>
+          <AnimateOnScroll
+            as="h2"
+            delay={0.1}
             className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
           >
             Свяжитесь <span className="gradient-text">с нами</span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+          </AnimateOnScroll>
+          <AnimateOnScroll
+            as="p"
+            delay={0.2}
             className="text-muted-foreground text-lg max-w-2xl mx-auto"
           >
             Оставьте заявку или свяжитесь с нами любым удобным способом.
             Мы ответим в течение 30 минут!
-          </motion.p>
+          </AnimateOnScroll>
         </div>
 
         <div className={`grid grid-cols-1 ${settings.form?.enabled !== false ? 'lg:grid-cols-2' : 'lg:grid-cols-1 max-w-2xl mx-auto'} gap-12 lg:gap-20`}>
           {/* Contact Info */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+          <AnimateOnScroll direction="left">
             {/* Contact cards */}
             <div className="space-y-4 mb-10">
               {contactInfo.map((item) => (
@@ -164,18 +152,16 @@ export default function Contacts() {
                 </p>
                 <div className="flex gap-4">
                   {socialLinks.map((social) => (
-                    <motion.a
+                    <a
                       key={social.name}
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`flex items-center gap-3 px-6 py-3 rounded-full ${social.color} text-white font-medium transition-all duration-300 hover:shadow-lg`}
+                      className={`flex items-center gap-3 px-6 py-3 rounded-full ${social.color} text-white font-medium transition-all duration-300 hover:shadow-lg hover-scale-subtle`}
                     >
                       <social.icon className="w-5 h-5" />
                       {social.name}
-                    </motion.a>
+                    </a>
                   ))}
                 </div>
               </div>
@@ -200,16 +186,11 @@ export default function Contacts() {
                 </p>
               </div>
             )}
-          </motion.div>
+          </AnimateOnScroll>
 
           {/* Contact Form */}
           {settings.form?.enabled !== false && (
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
+            <AnimateOnScroll direction="right">
               <form
                 onSubmit={handleSubmit}
                 className="p-8 md:p-10 rounded-3xl bg-card border border-border"
@@ -288,11 +269,7 @@ export default function Contacts() {
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-2">
-                      <motion.span
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full"
-                      />
+                      <span className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
                       Отправка...
                     </span>
                   ) : (
@@ -302,27 +279,19 @@ export default function Contacts() {
 
                 {/* Status messages */}
                 {submitStatus === "success" && (
-                  <motion.p
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-green-500 text-center"
-                  >
-                    ✓ Заявка успешно отправлена! Мы скоро свяжемся с вами.
-                  </motion.p>
+                  <p className="text-green-500 text-center animate-fade-in-up" style={{ animationDuration: "0.3s" }}>
+                    {"✓ Заявка успешно отправлена! Мы скоро свяжемся с вами."}
+                  </p>
                 )}
                 {submitStatus === "error" && (
-                  <motion.p
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-red-500 text-center"
-                  >
+                  <p className="text-red-500 text-center animate-fade-in-up" style={{ animationDuration: "0.3s" }}>
                     Ошибка отправки. Попробуйте позже или свяжитесь по телефону.
-                  </motion.p>
+                  </p>
                 )}
 
                 {settings.visibility?.documents !== false && (
                   <p className="text-xs text-muted-foreground text-center">
-                    Нажимая кнопку, вы соглашаетесь с{" "}
+                    {"Нажимая кнопку, вы соглашаетесь с "}
                     <a
                       href="/privacy"
                       className="text-[oklch(0.75_0.18_50)] hover:underline"
@@ -333,7 +302,7 @@ export default function Contacts() {
                 )}
               </div>
             </form>
-          </motion.div>
+          </AnimateOnScroll>
           )}
         </div>
       </div>
