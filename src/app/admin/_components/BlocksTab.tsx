@@ -10,7 +10,7 @@ const blockNames: Record<string, string> = {
   hero: "Главный экран (Hero)",
   services: "Услуги",
   about: "О нас",
-  portfolio: "Портфолио (Кейсы)",
+  portfolio: "Портфолио",
   howItWorks: "Как мы работаем",
   faq: "Часто задаваемые вопросы",
   contacts: "Контакты",
