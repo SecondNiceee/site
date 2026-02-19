@@ -22,7 +22,12 @@ export function useSettings(isAuthenticated: boolean) {
           data.form = { enabled: true };
         }
         if (!data.workingHours) {
-          data.workingHours = { enabled: true };
+          data.workingHours = { enabled: true, weekdays: "Пн-Пт: 9:00 — 20:00", weekends: "Сб-Вс: 10:00 — 18:00", note: "Срочные заявки — круглосуточно" };
+        }
+        if (!data.workingHours.weekdays) {
+          data.workingHours.weekdays = "Пн-Пт: 9:00 — 20:00";
+          data.workingHours.weekends = "Сб-Вс: 10:00 — 18:00";
+          data.workingHours.note = "Срочные заявки — круглосуточно";
         }
         if (!data.visibility) {
           data.visibility = { address: true, documents: true };

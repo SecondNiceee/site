@@ -11,7 +11,7 @@ const steps = [
     number: "01",
     title: "Оставьте заявку",
     description:
-      "Свяжитесь с нами по телефону, через форму или мессенджер. Расскажите о вашем проекте и потребностях в персонале.",
+      "Свяжитесь с нами и расскажите о вашем проекте и потребностях в персонале.",
   },
   {
     icon: FileText,
@@ -25,7 +25,7 @@ const steps = [
     number: "03",
     title: "Подбор команды",
     description:
-      "Формируем команду из проверенных специалистов с опытом в нужной сфере. Каждый проходит инструктаж перед выходом.",
+      "Формируем команду из проверенных специалистов с опытом в нужной сфере.",
   },
   {
     icon: CheckCircle,
@@ -140,8 +140,8 @@ export default function HowItWorks() {
                       <div className="w-12 h-12 rounded-full bg-[oklch(0.75_0.18_50)] flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-[oklch(0.75_0.18_50)/20]">
                         <step.icon className="w-6 h-6 text-black" />
                       </div>
-                      {/* Pulse effect */}
-                      <div className="absolute inset-0 rounded-full bg-[oklch(0.75_0.18_50)] animate-ping opacity-20" />
+                      {/* Subtle glow effect */}
+                      <div className="absolute inset-0 rounded-full bg-[oklch(0.75_0.18_50)/20] scale-125 blur-sm" />
                     </div>
                     <span className="font-[var(--font-oswald)] text-5xl font-bold text-foreground/5 group-hover:text-[oklch(0.75_0.18_50)/20] transition-colors duration-500">
                       {step.number}
@@ -177,7 +177,7 @@ export default function HowItWorks() {
           className="text-center mt-16"
         >
           <p className="text-muted-foreground mb-6">
-            Готовы обсудить ваш проект?
+            Готовы обсудить в��ш проект?
           </p>
           <motion.a
             href="#contacts"

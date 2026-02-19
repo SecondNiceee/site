@@ -76,8 +76,8 @@ export default function Portfolio() {
       <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent" />
       
       {/* Background decorations */}
-      <div className="absolute top-1/2 left-0 w-72 h-72 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute top-1/3 right-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/3] rounded-full blur-3xl translate-x-1/2" />
+      <div className="absolute top-1/2 left-0 w-72 h-72 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ transform: 'translate(-50%, -50%) translateZ(0)' }} />
+      <div className="absolute top-1/3 right-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/3] rounded-full blur-3xl translate-x-1/2 pointer-events-none" style={{ transform: 'translateX(50%) translateZ(0)' }} />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header */}
@@ -98,7 +98,7 @@ export default function Portfolio() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
           >
-            Наши <span className="gradient-text">кейсы</span>
+            <span className="gradient-text">Портфолио</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}

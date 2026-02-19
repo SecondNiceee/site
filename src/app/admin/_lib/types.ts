@@ -44,6 +44,9 @@ export interface SiteSettings {
   };
   workingHours: {
     enabled: boolean;
+    weekdays: string;
+    weekends: string;
+    note: string;
   };
   visibility: {
     address: boolean;
