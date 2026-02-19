@@ -177,7 +177,7 @@ export default function HowItWorks() {
           className="text-center mt-16"
         >
           <p className="text-muted-foreground mb-6">
-            Готовы обсудить в��ш проект?
+            Готовы обсудить ваш проект?
           </p>
           <motion.a
             href="#contacts"
