@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
 import {
   FolderOpen, Settings, FileText, HelpCircle, Briefcase, Lock,
 } from "lucide-react";
@@ -20,11 +20,27 @@ const tabs: { key: AdminTab; label: string; icon: React.ElementType }[] = [
 ];
 
 export function AdminTabs({ activeTab, onTabChange }: AdminTabsProps) {
+  const [indicatorStyle, setIndicatorStyle] = useState<React.CSSProperties>({});
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (activeRef.current && tabsRef.current) {
+      const tabRect = activeRef.current.getBoundingClientRect();
+      const containerRect = tabsRef.current.getBoundingClientRect();
+      setIndicatorStyle({
+        left: tabRect.left - containerRect.left + tabsRef.current.scrollLeft,
+        width: tabRect.width,
+      });
+    }
+  }, [activeTab]);
+
   return (
-    <div className="flex gap-2 mb-8 border-b border-border overflow-x-auto scrollbar-hide">
+    <div ref={tabsRef} className="relative flex gap-2 mb-8 border-b border-border overflow-x-auto scrollbar-hide">
       {tabs.map(({ key, label, icon: Icon }) => (
         <button
           key={key}
+          ref={activeTab === key ? activeRef : undefined}
           onClick={() => onTabChange(key)}
           className={`px-6 py-3 font-medium transition-colors relative whitespace-nowrap ${
             activeTab === key
@@ -36,14 +52,13 @@ export function AdminTabs({ activeTab, onTabChange }: AdminTabsProps) {
             <Icon className="w-4 h-4" />
             {label}
           </div>
-          {activeTab === key && (
-            <motion.div
-              layoutId="activeTab"
-              className="absolute bottom-0 left-0 right-0 h-0.5 bg-[oklch(0.75_0.18_50)]"
-            />
-          )}
         </button>
       ))}
+      {/* Animated indicator via CSS transition instead of framer-motion layoutId */}
+      <div
+        className="absolute bottom-0 h-0.5 bg-[oklch(0.75_0.18_50)] transition-all duration-300 ease-out"
+        style={indicatorStyle}
+      />
     </div>
   );
 }

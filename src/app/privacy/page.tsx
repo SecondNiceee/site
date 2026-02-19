@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { ArrowLeft, Shield, Database, Lock, Eye, Mail, FileText, CheckCircle } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useReveal } from "@/hooks/useReveal";
 
 const iconMap: Record<string, typeof Shield> = {
   "Общие положения": Shield,
@@ -21,6 +21,8 @@ const iconMap: Record<string, typeof Shield> = {
 export default function PrivacyPage() {
   const [sections, setSections] = useState<Array<{ title: string; content: string[] }>>([]);
   const [loading, setLoading] = useState(true);
+  const heroRef = useReveal<HTMLDivElement>();
+  const ctaRef = useReveal<HTMLDivElement>();
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -67,12 +69,7 @@ export default function PrivacyPage() {
         <section className="relative py-16 md:py-24 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.75_0.18_50)/5] via-transparent to-transparent" />
           <div className="container mx-auto px-4 lg:px-8 relative z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="max-w-4xl mx-auto"
-            >
+            <div ref={heroRef} className="reveal fade-up max-w-4xl mx-auto">
               <Link
                 href="/"
                 className="inline-flex items-center gap-2 text-muted-foreground hover:text-[oklch(0.75_0.18_50)] transition-colors mb-8 group"
@@ -105,7 +102,7 @@ export default function PrivacyPage() {
                   законодательства Российской Федерации в области защиты персональных данных.
                 </p>
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
@@ -114,34 +111,7 @@ export default function PrivacyPage() {
           <div className="container mx-auto px-4 lg:px-8">
             <div className="max-w-4xl mx-auto space-y-8">
               {sectionsWithIcons.map((section, index) => (
-                <motion.div
-                  key={section.title}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-card border border-border rounded-3xl p-8 md:p-10 hover:border-[oklch(0.75_0.18_50)/30] transition-all duration-300"
-                >
-                  <div className="flex items-start gap-6 mb-6">
-                    <div className="w-12 h-12 rounded-xl bg-[oklch(0.75_0.18_50)] flex items-center justify-center flex-shrink-0">
-                      <section.icon className="w-6 h-6 text-black" />
-                    </div>
-                    <div className="flex-1">
-                      <h2 className="font-[var(--font-oswald)] text-2xl md:text-3xl font-bold uppercase mb-4">
-                        {index + 1}. {section.title}
-                      </h2>
-                      <div className="space-y-4">
-                        {section.content.map((paragraph, pIndex) => (
-                          <p
-                            key={pIndex}
-                            className="text-muted-foreground leading-relaxed text-base md:text-lg"
-                          >
-                            {paragraph}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
+                <SectionCard key={section.title} section={section} index={index} />
               ))}
             </div>
           </div>
@@ -150,13 +120,7 @@ export default function PrivacyPage() {
         {/* Additional Info */}
         <section className="py-16 md:py-24">
           <div className="container mx-auto px-4 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="max-w-4xl mx-auto bg-card border border-border rounded-3xl p-8 md:p-12"
-            >
+            <div ref={ctaRef} className="reveal fade-up max-w-4xl mx-auto bg-card border border-border rounded-3xl p-8 md:p-12">
               <h2 className="font-[var(--font-oswald)] text-2xl md:text-3xl font-bold uppercase mb-6 text-center">
                 Ваша конфиденциальность важна для нас
               </h2>
@@ -199,11 +163,43 @@ export default function PrivacyPage() {
                   </Link>
                 </Button>
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
       </main>
       <Footer />
     </>
+  );
+}
+
+function SectionCard({ section, index }: { section: { title: string; content: string[]; icon: typeof Shield }; index: number }) {
+  const ref = useReveal<HTMLDivElement>();
+  return (
+    <div
+      ref={ref}
+      className="reveal fade-up bg-card border border-border rounded-3xl p-8 md:p-10 hover:border-[oklch(0.75_0.18_50)/30] transition-all duration-300"
+      style={{ "--reveal-delay": `${index * 80}ms` } as React.CSSProperties}
+    >
+      <div className="flex items-start gap-6 mb-6">
+        <div className="w-12 h-12 rounded-xl bg-[oklch(0.75_0.18_50)] flex items-center justify-center flex-shrink-0">
+          <section.icon className="w-6 h-6 text-black" />
+        </div>
+        <div className="flex-1">
+          <h2 className="font-[var(--font-oswald)] text-2xl md:text-3xl font-bold uppercase mb-4">
+            {index + 1}. {section.title}
+          </h2>
+          <div className="space-y-4">
+            {section.content.map((paragraph, pIndex) => (
+              <p
+                key={pIndex}
+                className="text-muted-foreground leading-relaxed text-base md:text-lg"
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

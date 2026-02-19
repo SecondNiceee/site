@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
 import { Edit, X, Save } from "lucide-react";
 import {
   Accordion,
@@ -28,6 +27,7 @@ export default function FAQ() {
   const [editingItem, setEditingItem] = useState<FAQItem | null>(null);
   const [editForm, setEditForm] = useState({ question: "", answer: "" });
   const [isSaving, setIsSaving] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const leftRef = useReveal<HTMLDivElement>();
   const rightRef = useReveal<HTMLDivElement>();
 
@@ -52,12 +52,14 @@ export default function FAQ() {
     fetchFAQ();
   }, []);
 
-  const handleEdit = (item: FAQItem) => {
+  const handleEdit = useCallback((item: FAQItem) => {
     setEditingItem(item);
     setEditForm({ question: item.question, answer: item.answer });
-  };
+    // Trigger CSS transition after mount
+    requestAnimationFrame(() => setModalVisible(true));
+  }, []);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (!editingItem) return;
 
     setIsSaving(true);
@@ -80,8 +82,7 @@ export default function FAQ() {
               : item
           )
         );
-        setEditingItem(null);
-        setEditForm({ question: "", answer: "" });
+        closeModal();
       } else {
         alert("Ошибка при сохранении");
       }
@@ -91,12 +92,15 @@ export default function FAQ() {
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [editingItem, editForm]);
 
-  const handleCancel = () => {
-    setEditingItem(null);
-    setEditForm({ question: "", answer: "" });
-  };
+  const closeModal = useCallback(() => {
+    setModalVisible(false);
+    setTimeout(() => {
+      setEditingItem(null);
+      setEditForm({ question: "", answer: "" });
+    }, 200);
+  }, []);
 
   if (isLoading) {
     return (
@@ -112,7 +116,7 @@ export default function FAQ() {
 
   return (
     <section id="faq" className="py-24 md:py-32 relative overflow-hidden bg-card/50">
-      {/* Background -- reduced blur */}
+      {/* Background */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-2xl translate-x-1/2 -translate-y-1/2" />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
@@ -139,7 +143,7 @@ export default function FAQ() {
           </div>
 
           {/* Right Column - Accordion */}
-          <div ref={rightRef} className="reveal fade-up">
+          <div ref={rightRef} className="reveal fade-up" style={{ "--reveal-delay": "100ms" } as React.CSSProperties}>
             <Accordion type="single" collapsible className="space-y-4">
               {faqData.length > 0 ? (
                 faqData.map((item) => (
@@ -179,72 +183,68 @@ export default function FAQ() {
         </div>
       </div>
 
-      {/* Edit Modal -- keep AnimatePresence only here since it's user-triggered */}
-      <AnimatePresence>
-        {editingItem && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-            onClick={handleCancel}
+      {/* Edit Modal - pure CSS transitions */}
+      {editingItem && (
+        <div
+          className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-200 ${
+            modalVisible ? "opacity-100" : "opacity-0"
+          }`}
+          onClick={closeModal}
+        >
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`relative bg-card border border-border rounded-2xl p-8 max-w-2xl w-full mx-4 transition-all duration-200 ${
+              modalVisible ? "scale-100 opacity-100" : "scale-95 opacity-0"
+            }`}
           >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-card border border-border rounded-2xl p-8 max-w-2xl w-full mx-4"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="font-[var(--font-oswald)] text-2xl font-bold uppercase">
-                  Редактирование вопроса
-                </h2>
-                <Button variant="ghost" size="icon" onClick={handleCancel}>
-                  <X className="w-5 h-5" />
-                </Button>
-              </div>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-[var(--font-oswald)] text-2xl font-bold uppercase">
+                Редактирование вопроса
+              </h2>
+              <Button variant="ghost" size="icon" onClick={closeModal}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Вопрос</label>
-                  <Input
-                    value={editForm.question}
-                    onChange={(e) => setEditForm({ ...editForm, question: e.target.value })}
-                    className="bg-background border-border"
-                    placeholder="Введите вопрос"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Ответ</label>
-                  <Textarea
-                    value={editForm.answer}
-                    onChange={(e) => setEditForm({ ...editForm, answer: e.target.value })}
-                    rows={6}
-                    className="bg-background border-border"
-                    placeholder="Введите ответ"
-                  />
-                </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Вопрос</label>
+                <Input
+                  value={editForm.question}
+                  onChange={(e) => setEditForm({ ...editForm, question: e.target.value })}
+                  className="bg-background border-border"
+                  placeholder="Введите вопрос"
+                />
               </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Ответ</label>
+                <Textarea
+                  value={editForm.answer}
+                  onChange={(e) => setEditForm({ ...editForm, answer: e.target.value })}
+                  rows={6}
+                  className="bg-background border-border"
+                  placeholder="Введите ответ"
+                />
+              </div>
+            </div>
 
-              <div className="flex gap-3 mt-6">
-                <Button
-                  onClick={handleSave}
-                  disabled={isSaving || !editForm.question || !editForm.answer}
-                  className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold flex-1"
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  {isSaving ? "Сохранение..." : "Сохранить"}
-                </Button>
-                <Button variant="outline" onClick={handleCancel} className="flex-1">
-                  Отмена
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <div className="flex gap-3 mt-6">
+              <Button
+                onClick={handleSave}
+                disabled={isSaving || !editForm.question || !editForm.answer}
+                className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold flex-1"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {isSaving ? "Сохранение..." : "Сохранить"}
+              </Button>
+              <Button variant="outline" onClick={closeModal} className="flex-1">
+                Отмена
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

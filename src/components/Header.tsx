@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
 import { Menu, X, Phone, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "@/hooks/useSettings";
@@ -58,7 +57,13 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToSection = (href: string) => {
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [isMobileMenuOpen]);
+
+  const scrollToSection = useCallback((href: string) => {
     setIsMobileMenuOpen(false);
 
     if (isHomePage) {
@@ -75,7 +80,7 @@ export default function Header() {
         }
       }, 100);
     }
-  };
+  }, [isHomePage, router]);
 
   const phoneLink = settings.contacts.phone.replace(/[^+\d]/g, "");
 
@@ -90,7 +95,6 @@ export default function Header() {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled ? "glass py-3" : "bg-transparent py-5"
         }`}
-        style={{ willChange: 'backdrop-filter' }}
       >
         <div className="container mx-auto px-4 lg:px-8">
           <div className="flex items-center justify-between">
@@ -123,8 +127,7 @@ export default function Header() {
                 <button
                   key={link.href}
                   onClick={() => scrollToSection(link.href)}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors relative group hover:-translate-y-0.5"
-                  style={{ transition: 'color 0.2s, transform 0.15s' }}
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground hover:-translate-y-0.5 transition-all duration-200 relative group"
                 >
                   {link.label}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[oklch(0.75_0.18_50)] transition-all duration-300 group-hover:w-full" />
@@ -136,9 +139,8 @@ export default function Header() {
             <div className="hidden lg:flex items-center gap-4">
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-full hover:bg-secondary transition-colors active:scale-90"
+                className="p-2 rounded-full hover:bg-secondary active:scale-90 transition-all duration-200"
                 title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
-                style={{ transition: 'background-color 0.2s, transform 0.1s' }}
               >
                 {theme === "dark" ? (
                   <Sun className="w-5 h-5 text-[oklch(0.75_0.18_50)]" />
@@ -179,8 +181,7 @@ export default function Header() {
 
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 active:scale-95"
-                style={{ transition: 'transform 0.1s' }}
+                className="p-2 active:scale-95 transition-transform"
               >
                 {isMobileMenuOpen ? (
                   <X className="w-6 h-6" />
@@ -193,59 +194,56 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile Menu -- keep AnimatePresence here, it's user-triggered */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 lg:hidden"
-          >
-            <div
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
-            <motion.nav
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              className="absolute top-0 right-0 h-full w-[80%] max-w-sm bg-background border-l border-border p-8 pt-24"
+      {/* Mobile Menu - CSS transitions only */}
+      <div
+        className={`fixed inset-0 z-40 lg:hidden transition-opacity duration-300 ${
+          isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div
+          className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+        <nav
+          className={`absolute top-0 right-0 h-full w-[80%] max-w-sm bg-background border-l border-border p-8 pt-24 transition-transform duration-300 ease-out ${
+            isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          <div className="flex flex-col gap-6">
+            {visibleNavLinks.map((link, i) => (
+              <button
+                key={link.href}
+                onClick={() => scrollToSection(link.href)}
+                className="text-lg font-medium text-left hover:text-[oklch(0.75_0.18_50)] transition-colors opacity-0"
+                style={{
+                  animation: isMobileMenuOpen
+                    ? `fade-up 0.3s ${i * 50}ms forwards`
+                    : "none",
+                }}
+              >
+                {link.label}
+              </button>
+            ))}
+            <hr className="border-border my-4" />
+            <a
+              href={`tel:${phoneLink}`}
+              className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
             >
-              <div className="flex flex-col gap-6">
-                {visibleNavLinks.map((link) => (
-                  <button
-                    key={link.href}
-                    onClick={() => scrollToSection(link.href)}
-                    className="text-lg font-medium text-left hover:text-[oklch(0.75_0.18_50)] transition-colors"
-                  >
-                    {link.label}
-                  </button>
-                ))}
-                <hr className="border-border my-4" />
-                <a
-                  href={`tel:${phoneLink}`}
-                  className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Phone className="w-5 h-5" />
-                  <span>{settings.contacts.phone}</span>
-                </a>
-                {blocks.contacts && (
-                  <Button
-                    onClick={() => scrollToSection("#contacts")}
-                    className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold w-full mt-4"
-                    size="lg"
-                  >
-                    Связаться
-                  </Button>
-                )}
-              </div>
-            </motion.nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <Phone className="w-5 h-5" />
+              <span>{settings.contacts.phone}</span>
+            </a>
+            {blocks.contacts && (
+              <Button
+                onClick={() => scrollToSection("#contacts")}
+                className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold w-full mt-4"
+                size="lg"
+              >
+                Связаться
+              </Button>
+            )}
+          </div>
+        </nav>
+      </div>
     </>
   );
 }
