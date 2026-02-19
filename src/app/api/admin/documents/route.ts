@@ -1,23 +1,17 @@
 import { NextResponse } from "next/server";
-import { supabase, supabaseAdmin } from "@/lib/supabase";
+import pool from "@/lib/db";
+
+const defaultDocuments = { privacy: { sections: [] }, offer: { sections: [] } };
 
 export async function GET() {
   try {
-    const { data, error } = await supabase
-      .from("documents")
-      .select("data")
-      .limit(1)
-      .single();
+    const { rows } = await pool.query("SELECT data FROM documents LIMIT 1");
 
-    if (error) {
-      console.error("Error reading documents:", error);
-      return NextResponse.json(
-        { message: "Error reading documents" },
-        { status: 500 }
-      );
+    if (rows.length === 0) {
+      return NextResponse.json(defaultDocuments);
     }
 
-    return NextResponse.json(data?.data || { privacy: { sections: [] }, offer: { sections: [] } });
+    return NextResponse.json(rows[0].data || defaultDocuments);
   } catch (error) {
     console.error("Error reading documents:", error);
     return NextResponse.json(
@@ -29,49 +23,20 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
-    if (!supabaseAdmin) {
-      return NextResponse.json(
-        { message: "Supabase не настроен" },
-        { status: 500 }
-      );
-    }
-
     const updatedDocuments = await request.json();
 
     // Проверяем, есть ли уже запись
-    const { data: existing } = await supabaseAdmin
-      .from("documents")
-      .select("id")
-      .limit(1)
-      .single();
+    const { rows: existing } = await pool.query("SELECT id FROM documents LIMIT 1");
 
-    if (existing) {
-      // Обновляем существующую запись
-      const { error } = await supabaseAdmin
-        .from("documents")
-        .update({ data: updatedDocuments })
-        .eq("id", existing.id);
-
-      if (error) {
-        console.error("Error updating documents:", error);
-        return NextResponse.json(
-          { message: "Error updating documents" },
-          { status: 500 }
-        );
-      }
+    if (existing.length > 0) {
+      await pool.query("UPDATE documents SET data = $1 WHERE id = $2", [
+        JSON.stringify(updatedDocuments),
+        existing[0].id,
+      ]);
     } else {
-      // Создаём новую запись
-      const { error } = await supabaseAdmin
-        .from("documents")
-        .insert({ data: updatedDocuments });
-
-      if (error) {
-        console.error("Error creating documents:", error);
-        return NextResponse.json(
-          { message: "Error creating documents" },
-          { status: 500 }
-        );
-      }
+      await pool.query("INSERT INTO documents (data) VALUES ($1)", [
+        JSON.stringify(updatedDocuments),
+      ]);
     }
 
     return NextResponse.json({ message: "Documents updated successfully" });
@@ -83,4 +48,3 @@ export async function PUT(request: Request) {
     );
   }
 }
-
