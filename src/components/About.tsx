@@ -1,9 +1,10 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { Check, Users, Zap, Shield, Clock, Award, HeartHandshake } from "lucide-react";
+import { Users, Zap, Shield, Clock, Award, HeartHandshake } from "lucide-react";
+import AnimateOnScroll from "@/components/AnimateOnScroll";
+import { useInView } from "@/hooks/useInView";
+import { cn } from "@/lib/utils";
 
 const features = [
   {
@@ -44,31 +45,8 @@ const features = [
   },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, x: -30 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut" as const,
-    },
-  },
-};
-
 export default function About() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [ref, isInView] = useInView({ once: true, rootMargin: "-100px" });
 
   return (
     <section id="about" className="py-24 md:py-32 relative overflow-hidden bg-card/50">
@@ -84,53 +62,48 @@ export default function About() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left Column - Text */}
           <div>
-            <motion.span
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+            <AnimateOnScroll
+              as="span"
               className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
             >
               О компании
-            </motion.span>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+            </AnimateOnScroll>
+            <AnimateOnScroll
+              as="h2"
+              delay={0.1}
               className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
             >
               Почему выбирают
               <br />
               <span className="gradient-text">Тяжёлый Профиль</span>
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+            </AnimateOnScroll>
+            <AnimateOnScroll
+              as="p"
+              delay={0.2}
               className="text-muted-foreground text-lg mb-8 leading-relaxed"
             >
               Мы не просто предоставляем рабочий персонал — мы берём на себя
               ответственность за результат. Каждый сотрудник проверен, обучен
               и готов к работе.
-            </motion.p>
-
+            </AnimateOnScroll>
           </div>
 
           {/* Right Column - Features */}
-          <motion.div
-            ref={ref}
-            variants={containerVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            className="space-y-4"
-          >
-            {features.map((feature) => (
-              <motion.div
+          <div ref={ref} className="space-y-4">
+            {features.map((feature, index) => (
+              <div
                 key={feature.title}
-                variants={itemVariants}
-                className="group flex gap-4 p-5 rounded-2xl bg-background/50 border border-transparent hover:border-[oklch(0.75_0.18_50)/20] transition-all duration-300"
+                className={cn(
+                  "group flex gap-4 p-5 rounded-2xl bg-background/50 border border-transparent hover:border-[oklch(0.75_0.18_50)/20] transition-all duration-300",
+                  "opacity-0 translate-x-[-30px]",
+                  isInView && "opacity-100 translate-x-0"
+                )}
+                style={{
+                  transitionProperty: "opacity, transform, border-color",
+                  transitionDuration: "0.5s",
+                  transitionTimingFunction: "ease-out",
+                  transitionDelay: isInView ? `${index * 0.15}s` : "0s",
+                }}
               >
                 <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-[oklch(0.75_0.18_50)/10] flex items-center justify-center group-hover:bg-[oklch(0.75_0.18_50)/20] transition-colors duration-300">
                   <feature.icon className="w-6 h-6 text-[oklch(0.75_0.18_50)]" />
@@ -143,12 +116,11 @@ export default function About() {
                     {feature.description}
                   </p>
                 </div>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>
   );
 }
-

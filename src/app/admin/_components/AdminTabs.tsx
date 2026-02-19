@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import {
   FolderOpen, Settings, FileText, HelpCircle, Briefcase, Lock,
 } from "lucide-react";
@@ -37,8 +36,7 @@ export function AdminTabs({ activeTab, onTabChange }: AdminTabsProps) {
             {label}
           </div>
           {activeTab === key && (
-            <motion.div
-              layoutId="activeTab"
+            <div
               className="absolute bottom-0 left-0 right-0 h-0.5 bg-[oklch(0.75_0.18_50)]"
             />
           )}

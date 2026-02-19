@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Users, Clock, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "@/hooks/useSettings";
@@ -30,31 +29,25 @@ export default function Hero() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0">
-        <motion.div
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-fade-in-scale"
           style={{
             backgroundImage: `url('/molodoi-master-stroit-dom.jpg')`,
           }}
         />
-        {/* Gradient overlay - только для темной темы */}
+        {/* Gradient overlay */}
         {theme === "dark" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-background"
+          <div
+            className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-background animate-fade-in"
+            style={{ animationDelay: "0.2s" }}
           />
         )}
         {/* Diagonal lines pattern */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.03 }}
-          transition={{ duration: 1, delay: 0.4 }}
-          className="absolute inset-0"
+        <div
+          className="absolute inset-0 animate-fade-in"
           style={{
+            animationDelay: "0.4s",
+            opacity: 0.03,
             backgroundImage: `repeating-linear-gradient(
               45deg,
               transparent,
@@ -70,22 +63,17 @@ export default function Hero() {
       <div className="relative z-10 container mx-auto px-4 lg:px-8 pt-24 pb-16">
         <div className="max-w-5xl mx-auto text-center">
           {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[oklch(0.75_0.18_50)/30] bg-[oklch(0.75_0.18_50)/10] text-sm text-[oklch(0.75_0.18_50)] mb-8"
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[oklch(0.75_0.18_50)/30] bg-[oklch(0.75_0.18_50)/10] text-sm text-[oklch(0.75_0.18_50)] mb-8 animate-fade-in-up"
           >
             <span className="w-2 h-2 rounded-full bg-[oklch(0.75_0.18_50)] animate-pulse" />
             Аутсорсинг рабочего персонала
-          </motion.div>
+          </div>
 
           {/* Main Heading */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="font-[var(--font-oswald)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold uppercase leading-[0.95] tracking-tight mb-6"
+          <h1
+            className="font-[var(--font-oswald)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold uppercase leading-[0.95] tracking-tight mb-6 animate-fade-in-up"
+            style={{ animationDelay: "0.2s" }}
           >
             {titleParts.length > 1 ? (
               <>
@@ -95,24 +83,20 @@ export default function Hero() {
             ) : (
               <span className="block gradient-text">{settings.hero.title}</span>
             )}
-          </motion.h1>
+          </h1>
 
           {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
+          <p
+            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in-up"
+            style={{ animationDelay: "0.4s" }}
           >
             {settings.hero.subtitle}
-          </motion.p>
+          </p>
 
           {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
+          <div
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 animate-fade-in-up"
+            style={{ animationDelay: "0.6s" }}
           >
             <Button
               onClick={scrollToContacts}
@@ -120,13 +104,9 @@ export default function Hero() {
               className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-bold text-lg px-8 py-6 group"
             >
               Заказать персонал
-              <motion.span
-                className="ml-2"
-                animate={{ x: [0, 5, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              >
-                →
-              </motion.span>
+              <span className="ml-2 inline-block animate-arrow-bounce">
+                {"→"}
+              </span>
             </Button>
             <Button
               variant="outline"
@@ -139,22 +119,18 @@ export default function Hero() {
             >
               Узнать больше
             </Button>
-          </motion.div>
+          </div>
 
           {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8"
+          <div
+            className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 animate-fade-in-up"
+            style={{ animationDelay: "0.8s" }}
           >
             {stats.map((stat, index) => (
-              <motion.div
+              <div
                 key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.9 + index * 0.1 }}
-                className="flex flex-col items-center p-6 rounded-2xl glass"
+                className="flex flex-col items-center p-6 rounded-2xl glass animate-fade-in-up"
+                style={{ animationDelay: `${0.9 + index * 0.1}s` }}
               >
                 <stat.icon className="w-8 h-8 text-[oklch(0.75_0.18_50)] mb-3" />
                 <span className="font-[var(--font-oswald)] text-3xl md:text-4xl font-bold text-foreground">
@@ -163,9 +139,9 @@ export default function Hero() {
                 <span className="text-sm text-muted-foreground mt-1">
                   {stat.label}
                 </span>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </div>
 
