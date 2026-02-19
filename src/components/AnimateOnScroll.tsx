@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode } from "react";
+import { useCallback, type ReactNode } from "react";
 import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +29,14 @@ export default function AnimateOnScroll({
   onClick,
   href,
 }: AnimateOnScrollProps) {
-  const [ref, isInView] = useInView({ once: true, rootMargin });
+  const [observerRef, isInView] = useInView({ once: true, rootMargin });
+
+  const callbackRef = useCallback(
+    (node: HTMLElement | null) => {
+      (observerRef as React.MutableRefObject<HTMLElement | null>).current = node;
+    },
+    [observerRef]
+  );
 
   const directionStyles: Record<string, string> = {
     up: "translate-y-[30px]",
@@ -39,24 +46,26 @@ export default function AnimateOnScroll({
     none: "",
   };
 
-  const props: Record<string, unknown> = {
-    ref,
-    className: cn(
-      "transition-all ease-out",
-      !isInView && "opacity-0",
-      !isInView && directionStyles[direction],
-      isInView && "opacity-100 translate-x-0 translate-y-0",
-      className
-    ),
-    style: {
-      transitionDuration: `${duration}s`,
-      transitionDelay: `${delay}s`,
-      ...style,
-    },
-  };
-
-  if (onClick) props.onClick = onClick;
-  if (href && Tag === "a") props.href = href;
-
-  return <Tag {...(props as React.ComponentProps<typeof Tag>)}>{children}</Tag>;
+  return (
+    <Tag
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ref={callbackRef as any}
+      className={cn(
+        "transition-all ease-out",
+        !isInView && "opacity-0",
+        !isInView && directionStyles[direction],
+        isInView && "opacity-100 translate-x-0 translate-y-0",
+        className
+      )}
+      style={{
+        transitionDuration: `${duration}s`,
+        transitionDelay: `${delay}s`,
+        ...style,
+      }}
+      {...(onClick ? { onClick } : {})}
+      {...(href && Tag === "a" ? { href } : {})}
+    >
+      {children}
+    </Tag>
+  );
 }
