@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Plus, Edit, Trash2, Save, X, Upload, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,11 +40,7 @@ export function PortfolioTab({
 
       {/* Edit/Create Form */}
       {(isCreating || editingItem) && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+        <div className="mb-8 animate-[fade-up_0.3s_ease-out_forwards]">
           <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle>
@@ -180,62 +175,56 @@ export function PortfolioTab({
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       )}
 
       {/* Items List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.map((item) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <Card className="bg-card border-border overflow-hidden">
-              <div className="relative h-40 bg-secondary">
-                {item.image ? (
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <ImageIcon className="w-12 h-12 text-muted-foreground/30" />
-                  </div>
-                )}
+          <Card key={item.id} className="bg-card border-border overflow-hidden">
+            <div className="relative h-40 bg-secondary">
+              {item.image ? (
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <ImageIcon className="w-12 h-12 text-muted-foreground/30" />
+                </div>
+              )}
+            </div>
+            <CardContent className="p-4">
+              <div className="flex items-start justify-between mb-2">
+                <h3 className="font-semibold">{item.title}</h3>
+                <span className="text-xs px-2 py-1 rounded-full bg-[oklch(0.75_0.18_50)/10] text-[oklch(0.75_0.18_50)]">
+                  {item.category}
+                </span>
               </div>
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-semibold">{item.title}</h3>
-                  <span className="text-xs px-2 py-1 rounded-full bg-[oklch(0.75_0.18_50)/10] text-[oklch(0.75_0.18_50)]">
-                    {item.category}
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                  {item.description}
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleEdit(item)}
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="text-red-500 hover:text-red-400"
-                    onClick={() => handleDelete(item.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                {item.description}
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleEdit(item)}
+                >
+                  <Edit className="w-4 h-4" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="text-red-500 hover:text-red-400"
+                  onClick={() => handleDelete(item.id)}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 

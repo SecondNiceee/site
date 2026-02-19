@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Send, MessageCircle, Phone, ArrowUp } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
 import { useTheme } from "@/components/ThemeProvider";
@@ -23,11 +22,9 @@ export default function Footer() {
   const { settings } = useSettings();
   const { theme } = useTheme();
 
-  // Format phone for tel: link
   const phoneLink = settings.contacts.phone.replace(/[^+\d]/g, "");
 
-  // Logo based on settings or theme fallback
-  const showLogo = settings.logo?.enabled !== false; // По умолчанию показываем
+  const showLogo = settings.logo?.enabled !== false;
   const logoSrc = settings.logo?.url
     ? settings.logo.url
     : theme === "dark" ? "/logo_white.png" : "/logo_black.png";
@@ -58,7 +55,6 @@ export default function Footer() {
 
   return (
     <footer className="relative bg-card border-t border-border">
-      {/* Main footer content */}
       <div className="container mx-auto px-4 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
           {/* Brand */}
@@ -83,18 +79,17 @@ export default function Footer() {
             </p>
             <div className="flex gap-3">
               {socialLinks.map((social) => (
-                <motion.a
+                <a
                   key={social.name}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-[oklch(0.75_0.18_50)] hover:text-black transition-colors duration-300"
+                  className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-[oklch(0.75_0.18_50)] hover:text-black transition-colors duration-300 hover:scale-110 active:scale-95"
                   title={social.name}
+                  style={{ transition: 'background-color 0.3s, color 0.3s, transform 0.15s' }}
                 >
                   <social.icon className="w-5 h-5" />
-                </motion.a>
+                </a>
               ))}
             </div>
           </div>
@@ -142,17 +137,16 @@ export default function Footer() {
         <div className="container mx-auto px-4 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © {currentYear} {settings.company.name}.
+              {"© "}{currentYear}{" "}{settings.company.name}{"."}
             </p>
-            <motion.button
+            <button
               onClick={scrollToTop}
-              whileHover={{ y: -3 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-[oklch(0.75_0.18_50)] transition-colors duration-300"
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-[oklch(0.75_0.18_50)] transition-colors duration-300 hover:-translate-y-0.5"
+              style={{ transition: 'color 0.3s, transform 0.15s' }}
             >
               Наверх
               <ArrowUp className="w-4 h-4" />
-            </motion.button>
+            </button>
           </div>
         </div>
       </div>

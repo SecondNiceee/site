@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,11 +20,7 @@ export function LoginForm({
 }: LoginFormProps) {
   return (
     <main className="min-h-screen bg-background flex items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md p-8"
-      >
+      <div className="w-full max-w-md p-8 animate-[fade-up_0.5s_ease-out_forwards]">
         <Card className="bg-card border-border">
           <CardHeader className="text-center">
             <div className="w-16 h-16 rounded-full bg-[oklch(0.75_0.18_50)/10] flex items-center justify-center mx-auto mb-4">
@@ -96,7 +91,7 @@ export function LoginForm({
             </form>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
     </main>
   );
 }
