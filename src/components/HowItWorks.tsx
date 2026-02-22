@@ -54,7 +54,7 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 1.0,
-      ease: [0.25, 0.1, 0.25, 1],
+      ease: [0.25, 0.1, 0.25, 1] as const,
     },
   },
 };
@@ -178,7 +178,7 @@ export default function HowItWorks() {
           className="text-center mt-16"
         >
           <p className="text-muted-foreground mb-6">
-            Готовы обсудить ваш про��кт?
+            Готовы обсудить ваш про����кт?
           </p>
           <a
             href="#contacts"
