@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import { Building2 } from "lucide-react";
-import AnimateOnScroll from "@/components/AnimateOnScroll";
-import { useInView } from "@/hooks/useInView";
-import { cn } from "@/lib/utils";
 
 // Portfolio data structure
 export interface PortfolioItem {
@@ -22,10 +20,32 @@ export interface PortfolioItem {
 // Set to false to show the portfolio section
 const HIDE_PORTFOLIO = false;
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut" as const,
+    },
+  },
+};
+
 export default function Portfolio() {
+  const ref = useRef(null);
   const [items, setItems] = useState<PortfolioItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [gridRef, isGridInView] = useInView({ once: true, rootMargin: "-50px" });
 
   useEffect(() => {
     const fetchPortfolio = async () => {
@@ -62,55 +82,61 @@ export default function Portfolio() {
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16 md:mb-20">
-          <AnimateOnScroll
-            as="span"
+          <motion.span
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
             className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
           >
             Портфолио
-          </AnimateOnScroll>
-          <AnimateOnScroll
-            as="h2"
-            delay={0.1}
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
             className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
           >
             <span className="gradient-text">Портфолио</span>
-          </AnimateOnScroll>
-          <AnimateOnScroll
-            as="p"
-            delay={0.2}
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="text-muted-foreground text-lg max-w-2xl mx-auto"
           >
             Проекты, которые мы успешно реализовали вместе с нашими клиентами
-          </AnimateOnScroll>
+          </motion.p>
         </div>
 
         {/* Loading state */}
         {isLoading && (
           <div className="flex justify-center items-center py-20">
-            <div className="w-10 h-10 border-2 border-[oklch(0.75_0.18_50)/30] border-t-[oklch(0.75_0.18_50)] rounded-full animate-spin" />
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="w-10 h-10 border-2 border-[oklch(0.75_0.18_50)/30] border-t-[oklch(0.75_0.18_50)] rounded-full"
+            />
           </div>
         )}
 
         {/* Portfolio Grid */}
         {!isLoading && items.length > 0 && (
-          <div
-            ref={gridRef}
+          <motion.div
+            ref={ref}
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
           >
-            {items.map((item, index) => (
-              <div
+            {items.map((item) => (
+              <motion.div
                 key={item.id}
-                className={cn(
-                  "group relative rounded-3xl overflow-hidden bg-card border border-border hover:border-[oklch(0.75_0.18_50)/30] transition-all duration-500",
-                  "opacity-0 translate-y-[50px]",
-                  isGridInView && "opacity-100 translate-y-0"
-                )}
-                style={{
-                  transitionProperty: "opacity, transform, border-color",
-                  transitionDuration: "0.6s",
-                  transitionTimingFunction: "ease-out",
-                  transitionDelay: isGridInView ? `${index * 0.2}s` : "0s",
-                }}
+                variants={itemVariants}
+                className="group relative rounded-3xl overflow-hidden bg-card border border-border hover:border-[oklch(0.75_0.18_50)/30] transition-all duration-500"
               >
                 {/* Image */}
                 <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
@@ -162,9 +188,9 @@ export default function Portfolio() {
                     )}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
 

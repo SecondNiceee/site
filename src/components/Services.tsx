@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { 
   Building2, Warehouse, Wrench, Factory,
   LucideIcon
 } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
-import AnimateOnScroll from "@/components/AnimateOnScroll";
 
 interface ServiceItem {
   id: string;
@@ -98,6 +98,8 @@ export default function Services() {
     if (contactsElement) {
       contactsElement.scrollIntoView({ behavior: "smooth" });
     } else if (settings.form?.enabled !== false) {
+      // Если форма включена, но секция контактов не найдена, открываем модальное окно
+      // (можно добавить модальное окно позже, если нужно)
       window.location.href = "/#contacts";
     }
   };
@@ -111,29 +113,36 @@ export default function Services() {
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16 md:mb-20">
-          <AnimateOnScroll
-            as="span"
+          <motion.span
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
             className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
           >
             Наши услуги
-          </AnimateOnScroll>
-          <AnimateOnScroll
-            as="h2"
-            delay={0.1}
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
             className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
           >
             Подберём специалистов
             <br />
             <span className="gradient-text">под любую задачу</span>
-          </AnimateOnScroll>
-          <AnimateOnScroll
-            as="p"
-            delay={0.2}
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="text-muted-foreground text-lg max-w-2xl mx-auto"
           >
             Мы точно понимаем, какие специалисты нужны под каждую задачу,
             и предоставляем именно их
-          </AnimateOnScroll>
+          </motion.p>
         </div>
 
         {/* Services Grid */}
@@ -204,3 +213,4 @@ export default function Services() {
     </section>
   );
 }
+

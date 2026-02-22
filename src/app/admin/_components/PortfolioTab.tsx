@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { Plus, Edit, Trash2, Save, X, Upload, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,9 +41,10 @@ export function PortfolioTab({
 
       {/* Edit/Create Form */}
       {(isCreating || editingItem) && (
-        <div
-          className="mb-8 animate-fade-in-up"
-          style={{ animationDuration: "0.3s" }}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
         >
           <Card className="bg-card border-border">
             <CardHeader>
@@ -178,16 +180,16 @@ export function PortfolioTab({
               </div>
             </CardContent>
           </Card>
-        </div>
+        </motion.div>
       )}
 
       {/* Items List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {items.map((item, index) => (
-          <div
+        {items.map((item) => (
+          <motion.div
             key={item.id}
-            className="animate-fade-in-up"
-            style={{ animationDelay: `${index * 0.05}s` }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
           >
             <Card className="bg-card border-border overflow-hidden">
               <div className="relative h-40 bg-secondary">
@@ -233,7 +235,7 @@ export function PortfolioTab({
                 </div>
               </CardContent>
             </Card>
-          </div>
+          </motion.div>
         ))}
       </div>
 
