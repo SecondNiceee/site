@@ -41,20 +41,19 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.15,
-      duration: 0.6,
+      staggerChildren: 0.2,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.6,
-      ease: [0.25, 0.1, 0.25, 1],
+      duration: 0.5,
+      ease: "easeOut" as const,
     },
   },
 };
@@ -82,28 +81,28 @@ export default function HowItWorks() {
         {/* Section Header */}
         <div className="text-center mb-16 md:mb-20">
           <motion.span
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 0.5 }}
             className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
           >
             Процесс работы
           </motion.span>
           <motion.h2
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 0.5, delay: 0.1 }}
             className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
           >
             Как начать <span className="gradient-text">работать?</span>
           </motion.h2>
           <motion.p
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="text-muted-foreground text-lg max-w-2xl mx-auto"
           >
             Простой и прозрачный процесс от заявки до результата
@@ -171,22 +170,24 @@ export default function HowItWorks() {
 
         {/* CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 0.5, delay: 0.6 }}
           className="text-center mt-16"
         >
           <p className="text-muted-foreground mb-6">
             Готовы обсудить ваш проект?
           </p>
-          <a
+          <motion.a
             href="#contacts"
-            className="inline-flex items-center gap-2 bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-bold px-8 py-4 rounded-full transition-colors duration-300 shadow-lg shadow-[oklch(0.75_0.18_50)/20] hover:scale-105 active:scale-95"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="inline-flex items-center gap-2 bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-bold px-8 py-4 rounded-full transition-colors duration-300 shadow-lg shadow-[oklch(0.75_0.18_50)/20]"
           >
             Оставить заявку
             <span>→</span>
-          </a>
+          </motion.a>
         </motion.div>
       </div>
     </section>

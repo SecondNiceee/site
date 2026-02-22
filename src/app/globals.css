@@ -244,27 +244,6 @@
   animation: gradient-shift 3s ease infinite;
 }
 
-/* CSS-only scroll reveal animations for Hero */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeInScale {
-  from { opacity: 0; transform: scale(1.05); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes bounceX {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(5px); }
-}
-
 /* Noise texture overlay */
 .noise-overlay {
   position: relative;
