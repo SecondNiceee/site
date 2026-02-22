@@ -104,7 +104,7 @@ export default function Hero() {
               className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-bold text-lg px-8 py-6 transition-colors duration-500"
             >
               Заказать персонал
-              <span className="ml-2 inline-block animate-[bounceX_8s_ease-in-out_infinite]">→</span>
+              <span className="ml-2 inline-block">→</span>
             </Button>
             <Button
               variant="outline"
