@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { IconPicker } from "./IconPicker";
 import type { useServices } from "../_hooks/useServices";
 
 type ServicesTabProps = ReturnType<typeof useServices>;
@@ -57,15 +58,10 @@ export function ServicesTab({
                   className="bg-background border-border"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">{"Иконка (название из lucide-react)"}</label>
-                <Input
-                  value={serviceFormData.icon}
-                  onChange={(e) => setServiceFormData({ ...serviceFormData, icon: e.target.value })}
-                  placeholder="Building2, Warehouse, Wrench, Factory"
-                  className="bg-background border-border"
-                />
-              </div>
+              <IconPicker
+                value={serviceFormData.icon}
+                onChange={(icon) => setServiceFormData({ ...serviceFormData, icon })}
+              />
               <div>
                 <label className="block text-sm font-medium mb-2">{"Особенности (через запятую)"}</label>
                 <Input

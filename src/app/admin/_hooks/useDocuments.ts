@@ -65,29 +65,49 @@ export function useDocuments(isAuthenticated: boolean) {
     setDocuments(newDocuments);
   };
 
-  const updateDocumentParagraph = (
+  // Update section content as a single text block (split by double newlines into paragraphs)
+  const updateDocumentSectionText = (
     docType: "privacy" | "offer",
     sectionIndex: number,
-    paragraphIndex: number,
-    value: string
+    fullText: string
   ) => {
     if (!documents) return;
     const newDocuments = { ...documents };
-    newDocuments[docType].sections[sectionIndex].content[paragraphIndex] = value;
+    // Split by double newline into paragraphs, preserve single newlines within a paragraph
+    const paragraphs = fullText
+      .split(/\n\n+/)
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0);
+    newDocuments[docType].sections[sectionIndex].content =
+      paragraphs.length > 0 ? paragraphs : [""];
     setDocuments(newDocuments);
   };
 
-  const addDocumentParagraph = (docType: "privacy" | "offer", sectionIndex: number) => {
+  // Convert section content array back to a single text string
+  const getSectionText = (
+    docType: "privacy" | "offer",
+    sectionIndex: number
+  ): string => {
+    if (!documents) return "";
+    const section = documents[docType].sections[sectionIndex];
+    if (!section) return "";
+    return section.content.join("\n\n");
+  };
+
+  const addDocumentSection = (docType: "privacy" | "offer") => {
     if (!documents) return;
     const newDocuments = { ...documents };
-    newDocuments[docType].sections[sectionIndex].content.push("");
+    newDocuments[docType].sections.push({ title: "", content: [""] });
     setDocuments(newDocuments);
   };
 
-  const removeDocumentParagraph = (docType: "privacy" | "offer", sectionIndex: number, paragraphIndex: number) => {
+  const removeDocumentSection = (
+    docType: "privacy" | "offer",
+    sectionIndex: number
+  ) => {
     if (!documents) return;
     const newDocuments = { ...documents };
-    newDocuments[docType].sections[sectionIndex].content.splice(paragraphIndex, 1);
+    newDocuments[docType].sections.splice(sectionIndex, 1);
     setDocuments(newDocuments);
   };
 
@@ -96,8 +116,9 @@ export function useDocuments(isAuthenticated: boolean) {
     savingDocuments,
     handleSaveDocuments,
     updateDocumentSection,
-    updateDocumentParagraph,
-    addDocumentParagraph,
-    removeDocumentParagraph,
+    updateDocumentSectionText,
+    getSectionText,
+    addDocumentSection,
+    removeDocumentSection,
   };
 }

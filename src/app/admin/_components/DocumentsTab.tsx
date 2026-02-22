@@ -7,14 +7,84 @@ import type { useDocuments } from "../_hooks/useDocuments";
 
 type DocumentsTabProps = ReturnType<typeof useDocuments>;
 
+function DocumentSections({
+  docType,
+  sections,
+  getSectionText,
+  updateDocumentSection,
+  updateDocumentSectionText,
+  addDocumentSection,
+  removeDocumentSection,
+}: {
+  docType: "privacy" | "offer";
+  sections: { title: string; content: string[] }[];
+  getSectionText: DocumentsTabProps["getSectionText"];
+  updateDocumentSection: DocumentsTabProps["updateDocumentSection"];
+  updateDocumentSectionText: DocumentsTabProps["updateDocumentSectionText"];
+  addDocumentSection: DocumentsTabProps["addDocumentSection"];
+  removeDocumentSection: DocumentsTabProps["removeDocumentSection"];
+}) {
+  return (
+    <div className="space-y-6">
+      {sections.map((section, sectionIndex) => (
+        <div key={sectionIndex} className="border border-border rounded-lg p-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <Input
+              value={section.title}
+              onChange={(e) =>
+                updateDocumentSection(docType, sectionIndex, "title", e.target.value)
+              }
+              className="font-semibold text-lg bg-background border-border flex-1"
+              placeholder="Название раздела"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => removeDocumentSection(docType, sectionIndex)}
+              className="text-red-500 hover:text-red-400 shrink-0"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-2">
+              Вставьте весь текст раздела. Параграфы разделяются пустой строкой.
+            </p>
+            <Textarea
+              value={getSectionText(docType, sectionIndex)}
+              onChange={(e) =>
+                updateDocumentSectionText(docType, sectionIndex, e.target.value)
+              }
+              rows={10}
+              className="bg-background border-border w-full font-mono text-sm leading-relaxed"
+              placeholder={"Вставьте текст раздела здесь...\n\nКаждый параграф отделяется пустой строкой."}
+            />
+          </div>
+        </div>
+      ))}
+      <Button
+        type="button"
+        variant="outline"
+        onClick={() => addDocumentSection(docType)}
+        className="w-full"
+      >
+        <Plus className="w-4 h-4 mr-2" />
+        Добавить раздел
+      </Button>
+    </div>
+  );
+}
+
 export function DocumentsTab({
   documents,
   savingDocuments,
   handleSaveDocuments,
   updateDocumentSection,
-  updateDocumentParagraph,
-  addDocumentParagraph,
-  removeDocumentParagraph,
+  updateDocumentSectionText,
+  getSectionText,
+  addDocumentSection,
+  removeDocumentSection,
 }: DocumentsTabProps) {
   if (!documents) return null;
 
@@ -28,49 +98,16 @@ export function DocumentsTab({
             Политика конфиденциальности
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {documents.privacy.sections.map((section, sectionIndex) => (
-            <div key={sectionIndex} className="border border-border rounded-lg p-6 space-y-4">
-              <Input
-                value={section.title}
-                onChange={(e) => updateDocumentSection("privacy", sectionIndex, "title", e.target.value)}
-                className="font-semibold text-lg bg-background border-border"
-                placeholder="Название раздела"
-              />
-              <div className="space-y-2">
-                {section.content.map((paragraph, paragraphIndex) => (
-                  <div key={paragraphIndex} className="flex gap-2">
-                    <Textarea
-                      value={paragraph}
-                      onChange={(e) => updateDocumentParagraph("privacy", sectionIndex, paragraphIndex, e.target.value)}
-                      rows={2}
-                      className="bg-background border-border flex-1"
-                      placeholder="Текст параграфа"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeDocumentParagraph("privacy", sectionIndex, paragraphIndex)}
-                      className="text-red-500 hover:text-red-400"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => addDocumentParagraph("privacy", sectionIndex)}
-                  className="w-full"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Добавить параграф
-                </Button>
-              </div>
-            </div>
-          ))}
+        <CardContent>
+          <DocumentSections
+            docType="privacy"
+            sections={documents.privacy.sections}
+            getSectionText={getSectionText}
+            updateDocumentSection={updateDocumentSection}
+            updateDocumentSectionText={updateDocumentSectionText}
+            addDocumentSection={addDocumentSection}
+            removeDocumentSection={removeDocumentSection}
+          />
         </CardContent>
       </Card>
 
@@ -82,49 +119,16 @@ export function DocumentsTab({
             Договор публичной оферты
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {documents.offer.sections.map((section, sectionIndex) => (
-            <div key={sectionIndex} className="border border-border rounded-lg p-6 space-y-4">
-              <Input
-                value={section.title}
-                onChange={(e) => updateDocumentSection("offer", sectionIndex, "title", e.target.value)}
-                className="font-semibold text-lg bg-background border-border"
-                placeholder="Название раздела"
-              />
-              <div className="space-y-2">
-                {section.content.map((paragraph, paragraphIndex) => (
-                  <div key={paragraphIndex} className="flex gap-2">
-                    <Textarea
-                      value={paragraph}
-                      onChange={(e) => updateDocumentParagraph("offer", sectionIndex, paragraphIndex, e.target.value)}
-                      rows={2}
-                      className="bg-background border-border flex-1"
-                      placeholder="Текст параграфа"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeDocumentParagraph("offer", sectionIndex, paragraphIndex)}
-                      className="text-red-500 hover:text-red-400"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => addDocumentParagraph("offer", sectionIndex)}
-                  className="w-full"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Добавить параграф
-                </Button>
-              </div>
-            </div>
-          ))}
+        <CardContent>
+          <DocumentSections
+            docType="offer"
+            sections={documents.offer.sections}
+            getSectionText={getSectionText}
+            updateDocumentSection={updateDocumentSection}
+            updateDocumentSectionText={updateDocumentSectionText}
+            addDocumentSection={addDocumentSection}
+            removeDocumentSection={removeDocumentSection}
+          />
         </CardContent>
       </Card>
 
