@@ -49,8 +49,8 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
-      duration: 0.6,
+      staggerChildren: 0.15,
+      duration: 1.0,
     },
   },
 };
@@ -61,7 +61,7 @@ const itemVariants = {
     opacity: 1,
     x: 0,
     transition: {
-      duration: 0.6,
+      duration: 1.0,
       ease: [0.25, 0.1, 0.25, 1],
     },
   },
@@ -89,7 +89,7 @@ export default function About() {
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{ duration: 1.1, ease: [0.25, 0.1, 0.25, 1] }}
               className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
             >
               О компании
@@ -98,7 +98,7 @@ export default function About() {
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{ duration: 1.1, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
               className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
             >
               Почему выбирают
@@ -109,7 +109,7 @@ export default function About() {
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{ duration: 1.1, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
               className="text-muted-foreground text-lg mb-8 leading-relaxed"
             >
               Мы не просто предоставляем рабочий персонал — мы берём на себя

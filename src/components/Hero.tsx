@@ -30,7 +30,7 @@ export default function Hero() {
       {/* Background Image with Overlay */}
       <div className="absolute inset-0">
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-[fadeInScale_1.2s_ease-out_forwards]"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-[fadeInScale_2s_ease-out_forwards]"
           style={{
             backgroundImage: `url('/molodoi-master-stroit-dom.jpg')`,
             opacity: 0,
@@ -39,7 +39,7 @@ export default function Hero() {
         {/* Gradient overlay - только для темной темы */}
         {theme === "dark" && (
           <div
-            className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-background animate-[fadeIn_1s_0.2s_ease-out_forwards]"
+            className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-background animate-[fadeIn_1.8s_0.3s_ease-out_forwards]"
             style={{ opacity: 0 }}
           />
         )}
@@ -63,16 +63,16 @@ export default function Hero() {
         <div className="max-w-5xl mx-auto text-center">
           {/* Badge */}
           <div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[oklch(0.75_0.18_50)/30] bg-[oklch(0.75_0.18_50)/10] text-sm text-[oklch(0.75_0.18_50)] mb-8 animate-[fadeInUp_0.7s_0.1s_ease-out_forwards]"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[oklch(0.75_0.18_50)/30] bg-[oklch(0.75_0.18_50)/10] text-sm text-[oklch(0.75_0.18_50)] mb-8 animate-[fadeInUp_1.2s_0.2s_ease-out_forwards]"
             style={{ opacity: 0 }}
           >
-            <span className="w-2 h-2 rounded-full bg-[oklch(0.75_0.18_50)] animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-[oklch(0.75_0.18_50)] animate-[softGlow_8s_ease-in-out_infinite]" />
             Аутсорсинг рабочего персонала
           </div>
 
           {/* Main Heading */}
           <h1
-            className="font-[var(--font-oswald)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold uppercase leading-[0.95] tracking-tight mb-6 animate-[fadeInUp_0.8s_0.3s_ease-out_forwards]"
+            className="font-[var(--font-oswald)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold uppercase leading-[0.95] tracking-tight mb-6 animate-[fadeInUp_1.4s_0.5s_ease-out_forwards]"
             style={{ opacity: 0 }}
           >
             {titleParts.length > 1 ? (
@@ -87,7 +87,7 @@ export default function Hero() {
 
           {/* Subtitle */}
           <p
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-[fadeInUp_0.8s_0.5s_ease-out_forwards]"
+            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-[fadeInUp_1.4s_0.8s_ease-out_forwards]"
             style={{ opacity: 0 }}
           >
             {settings.hero.subtitle}
@@ -95,16 +95,16 @@ export default function Hero() {
 
           {/* CTA Buttons */}
           <div
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 animate-[fadeInUp_0.8s_0.7s_ease-out_forwards]"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 animate-[fadeInUp_1.4s_1.1s_ease-out_forwards]"
             style={{ opacity: 0 }}
           >
             <Button
               onClick={scrollToContacts}
               size="lg"
-              className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-bold text-lg px-8 py-6 group"
+              className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-bold text-lg px-8 py-6 transition-colors duration-500"
             >
               Заказать персонал
-              <span className="ml-2 inline-block animate-[bounceX_1.5s_infinite]">→</span>
+              <span className="ml-2 inline-block animate-[bounceX_8s_ease-in-out_infinite]">→</span>
             </Button>
             <Button
               variant="outline"
@@ -121,7 +121,7 @@ export default function Hero() {
 
           {/* Stats */}
           <div
-            className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 animate-[fadeInUp_0.8s_0.9s_ease-out_forwards]"
+            className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 animate-[fadeInUp_1.4s_1.4s_ease-out_forwards]"
             style={{ opacity: 0 }}
           >
             {stats.map((stat) => (

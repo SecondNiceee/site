@@ -121,7 +121,7 @@ export default function FAQ() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.9 }}
               className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
             >
               Вопросы и ответы
@@ -130,7 +130,7 @@ export default function FAQ() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              transition={{ duration: 0.9, delay: 0.15 }}
               className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
             >
               Частые <span className="gradient-text">вопросы</span>
@@ -139,7 +139,7 @@ export default function FAQ() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.9, delay: 0.3 }}
               className="text-muted-foreground text-lg mb-8"
             >
               Ответы на популярные вопросы о нашей работе. Не нашли ответ?
@@ -149,7 +149,7 @@ export default function FAQ() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              transition={{ duration: 0.9, delay: 0.4 }}
               href="#contacts"
               className="inline-flex items-center gap-2 text-[oklch(0.75_0.18_50)] hover:text-[oklch(0.85_0.18_50)] font-medium transition-colors"
             >
@@ -163,7 +163,7 @@ export default function FAQ() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 1.0 }}
           >
             <Accordion type="single" collapsible className="space-y-4">
               {faqData.length > 0 ? (

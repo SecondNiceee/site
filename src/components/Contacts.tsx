@@ -101,7 +101,7 @@ export default function Contacts() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.9 }}
             className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
           >
             Контакты
@@ -110,7 +110,7 @@ export default function Contacts() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={{ duration: 0.9, delay: 0.15 }}
             className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
           >
             Свяжитесь <span className="gradient-text">с нами</span>
@@ -119,7 +119,7 @@ export default function Contacts() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.9, delay: 0.3 }}
             className="text-muted-foreground text-lg max-w-2xl mx-auto"
           >
             Оставьте заявку или свяжитесь с нами любым удобным способом.
@@ -133,7 +133,7 @@ export default function Contacts() {
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 1.0 }}
           >
             {/* Contact cards */}
             <div className="space-y-4 mb-10">
@@ -208,7 +208,7 @@ export default function Contacts() {
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 1.0 }}
             >
               <form
                 onSubmit={handleSubmit}
