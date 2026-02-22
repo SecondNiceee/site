@@ -4,6 +4,11 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   Building2, Warehouse, Wrench, Factory,
+  HardHat, Truck, Package, Hammer,
+  ShieldCheck, Users, ClipboardList, Cog,
+  Landmark, PaintBucket, Ruler, Layers,
+  Zap, Home, Drill, Fence,
+  Handshake, Construction, Container, Forklift,
   LucideIcon
 } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
@@ -23,7 +28,36 @@ const iconMap: Record<string, LucideIcon> = {
   Warehouse,
   Wrench,
   Factory,
+  HardHat,
+  Truck,
+  Package,
+  Hammer,
+  ShieldCheck,
+  Users,
+  ClipboardList,
+  Cog,
+  Landmark,
+  PaintBucket,
+  Ruler,
+  Layers,
+  Zap,
+  Home,
+  Drill,
+  Fence,
+  Handshake,
+  Construction,
+  Container,
+  Forklift,
 };
+
+function ServiceIcon({ icon, className }: { icon: string; className?: string }) {
+  const isCustomImage = icon.startsWith("/uploads/") || icon.startsWith("http");
+  if (isCustomImage) {
+    return <img src={icon} alt="" className={`object-contain ${className || "w-7 h-7"}`} />;
+  }
+  const IconComponent = iconMap[icon] || Building2;
+  return <IconComponent className={className || "w-7 h-7"} />;
+}
 
 export default function Services() {
   const { settings } = useSettings();
@@ -114,19 +148,19 @@ export default function Services() {
         {/* Section Header */}
         <div className="text-center mb-16 md:mb-20">
           <motion.span
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
             className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
           >
             Наши услуги
           </motion.span>
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
             className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
           >
             Подберём специалистов
@@ -134,10 +168,10 @@ export default function Services() {
             <span className="gradient-text">под любую задачу</span>
           </motion.h2>
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             className="text-muted-foreground text-lg max-w-2xl mx-auto"
           >
             Мы точно понимаем, какие специалисты нужны под каждую задачу,
@@ -153,7 +187,6 @@ export default function Services() {
             </div>
           ) : services.length > 0 ? (
             services.map((service, index) => {
-              const IconComponent = iconMap[service.icon] || Building2;
               return (
                 <div
                   key={service.id}
@@ -174,7 +207,7 @@ export default function Services() {
                       <div className="relative z-10">
                         {/* Icon */}
                         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[oklch(0.75_0.18_50)/10] text-[oklch(0.75_0.18_50)] mb-6 group-hover:scale-110 transition-transform duration-300">
-                          <IconComponent className="w-7 h-7" />
+                          <ServiceIcon icon={service.icon} className="w-7 h-7" />
                         </div>
 
                         {/* Title */}
