@@ -266,8 +266,13 @@
 }
 
 @keyframes softGlow {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0px oklch(0.75 0.18 50); }
-  50% { opacity: 0.85; box-shadow: 0 0 6px oklch(0.75 0.18 50 / 0.5); }
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 3px oklch(0.75 0.18 50 / 0.3); }
+  50% { opacity: 0.5; transform: scale(0.8); box-shadow: 0 0 10px oklch(0.75 0.18 50 / 0.6); }
+}
+
+@keyframes softBounceX {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(3px); }
 }
 
 /* Noise texture overlay */
