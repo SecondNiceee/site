@@ -66,7 +66,7 @@ export default function Hero() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[oklch(0.75_0.18_50)/30] bg-[oklch(0.75_0.18_50)/10] text-sm text-[oklch(0.75_0.18_50)] mb-8 animate-[fadeInUp_1.2s_0.2s_ease-out_forwards]"
             style={{ opacity: 0 }}
           >
-            <span className="w-2 h-2 rounded-full bg-[oklch(0.75_0.18_50)] animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-[oklch(0.75_0.18_50)] animate-[pulse_3.5s_cubic-bezier(0.4,0,0.6,1)_infinite]" />
             Аутсорсинг рабочего персонала
           </div>
 
@@ -104,7 +104,7 @@ export default function Hero() {
               className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-bold text-lg px-8 py-6 group"
             >
               Заказать персонал
-              <span className="ml-2 inline-block animate-[bounceX_2.5s_infinite]">→</span>
+              <span className="ml-2 inline-block animate-[bounceX_4s_ease-in-out_infinite]">→</span>
             </Button>
             <Button
               variant="outline"
