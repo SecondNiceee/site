@@ -265,6 +265,11 @@
   50% { transform: translateX(5px); }
 }
 
+@keyframes softGlow {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0px oklch(0.75 0.18 50); }
+  50% { opacity: 0.85; box-shadow: 0 0 6px oklch(0.75 0.18 50 / 0.5); }
+}
+
 /* Noise texture overlay */
 .noise-overlay {
   position: relative;

@@ -66,7 +66,7 @@ export default function Hero() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[oklch(0.75_0.18_50)/30] bg-[oklch(0.75_0.18_50)/10] text-sm text-[oklch(0.75_0.18_50)] mb-8 animate-[fadeInUp_1.2s_0.2s_ease-out_forwards]"
             style={{ opacity: 0 }}
           >
-            <span className="w-2 h-2 rounded-full bg-[oklch(0.75_0.18_50)] animate-[pulse_7s_cubic-bezier(0.4,0,0.6,1)_infinite]" />
+            <span className="w-2 h-2 rounded-full bg-[oklch(0.75_0.18_50)] animate-[softGlow_8s_ease-in-out_infinite]" />
             Аутсорсинг рабочего персонала
           </div>
 
