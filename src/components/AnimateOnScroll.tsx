@@ -22,7 +22,7 @@ export default function AnimateOnScroll({
   className,
   delay = 0,
   direction = "up",
-  duration = 0.6,
+  duration = 1.0,
   as: Tag = "div",
   rootMargin = "-80px",
   style,

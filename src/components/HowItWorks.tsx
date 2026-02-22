@@ -41,8 +41,8 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.15,
-      duration: 0.6,
+      staggerChildren: 0.2,
+      duration: 1.0,
     },
   },
 };
@@ -53,7 +53,7 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.6,
+      duration: 1.0,
       ease: [0.25, 0.1, 0.25, 1],
     },
   },
@@ -85,7 +85,7 @@ export default function HowItWorks() {
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 1.1, ease: [0.25, 0.1, 0.25, 1] }}
             className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
           >
             Процесс работы
@@ -94,7 +94,7 @@ export default function HowItWorks() {
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 1.1, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
             className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
           >
             Как начать <span className="gradient-text">работать?</span>
@@ -103,7 +103,7 @@ export default function HowItWorks() {
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 1.1, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
             className="text-muted-foreground text-lg max-w-2xl mx-auto"
           >
             Простой и прозрачный процесс от заявки до результата
@@ -174,11 +174,11 @@ export default function HowItWorks() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 1.1, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
           className="text-center mt-16"
         >
           <p className="text-muted-foreground mb-6">
-            Готовы обсудить ваш проект?
+            Готовы обсудить ваш про��кт?
           </p>
           <a
             href="#contacts"

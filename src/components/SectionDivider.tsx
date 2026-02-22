@@ -34,7 +34,7 @@ export default function SectionDivider({ variant = "default" }: SectionDividerPr
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 1, ease: "easeOut" }}
+          transition={{ duration: 1.6, ease: "easeOut" }}
           className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.75_0.18_50)/40] to-transparent origin-left"
         />
         <div className="absolute bottom-0 left-0 right-0 h-full bg-gradient-to-t from-background to-transparent" />
@@ -51,7 +51,7 @@ export default function SectionDivider({ variant = "default" }: SectionDividerPr
           initial={{ opacity: 0, scale: 0.8 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 1.0 }}
           className="flex items-center justify-center gap-4"
         >
           {/* Left line */}
@@ -59,7 +59,7 @@ export default function SectionDivider({ variant = "default" }: SectionDividerPr
             initial={{ width: 0 }}
             whileInView={{ width: "100%" }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 1.2, delay: 0.3 }}
             className="h-px bg-gradient-to-r from-transparent to-[oklch(0.75_0.18_50)/30] max-w-[200px]"
           />
           
@@ -74,7 +74,7 @@ export default function SectionDivider({ variant = "default" }: SectionDividerPr
             initial={{ width: 0 }}
             whileInView={{ width: "100%" }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 1.2, delay: 0.3 }}
             className="h-px bg-gradient-to-l from-transparent to-[oklch(0.75_0.18_50)/30] max-w-[200px]"
           />
         </motion.div>

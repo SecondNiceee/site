@@ -241,7 +241,7 @@
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: gradient-shift 3s ease infinite;
+  animation: gradient-shift 5s ease infinite;
 }
 
 /* CSS-only scroll reveal animations for Hero */
