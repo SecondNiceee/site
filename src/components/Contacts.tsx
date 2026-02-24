@@ -122,8 +122,7 @@ export default function Contacts() {
             transition={{ duration: 0.9, delay: 0.3 }}
             className="text-muted-foreground text-lg max-w-2xl mx-auto"
           >
-            Оставьте заявку или свяжитесь с нами любым удобным способом.
-            Мы ответим в течение 30 минут!
+            Свяжитесь с нами любым удобным способом
           </motion.p>
         </div>
 

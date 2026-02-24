@@ -178,7 +178,7 @@ export default function HowItWorks() {
           className="text-center mt-16"
         >
           <p className="text-muted-foreground mb-6">
-            Готовы обсудить ваш про����кт?
+            Готовы обсудить ваш проект?
           </p>
           <a
             href="#contacts"
