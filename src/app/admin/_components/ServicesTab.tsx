@@ -63,18 +63,40 @@ export function ServicesTab({
                 onChange={(icon) => setServiceFormData({ ...serviceFormData, icon })}
               />
               <div>
-                <label className="block text-sm font-medium mb-2">{"Особенности (через запятую)"}</label>
-                <Input
-                  value={serviceFormData.features.join(", ")}
-                  onChange={(e) =>
-                    setServiceFormData({
-                      ...serviceFormData,
-                      features: e.target.value.split(",").map(f => f.trim()).filter(f => f),
-                    })
-                  }
-                  placeholder="Особенность 1, Особенность 2, Особенность 3"
-                  className="bg-background border-border"
-                />
+                <label className="block text-sm font-medium mb-2">Особенности</label>
+                <div className="space-y-2">
+                  <Textarea
+                    value={serviceFormData.features.join("\n")}
+                    onChange={(e) =>
+                      setServiceFormData({
+                        ...serviceFormData,
+                        features: e.target.value.split("\n").map(f => f.trim()).filter(f => f),
+                      })
+                    }
+                    placeholder="Введите каждую особенность на новой строке"
+                    rows={3}
+                    className="bg-background border-border"
+                  />
+                  <p className="text-xs text-muted-foreground">Каждую особенность вводите на новой строке</p>
+                  {serviceFormData.features.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {serviceFormData.features.map((feature, idx) => (
+                        <div key={idx} className="flex items-center gap-2 px-3 py-1 bg-secondary rounded">
+                          <span className="text-sm">{feature}</span>
+                          <button
+                            onClick={() => {
+                              const newFeatures = serviceFormData.features.filter((_, i) => i !== idx);
+                              setServiceFormData({ ...serviceFormData, features: newFeatures });
+                            }}
+                            className="text-xs hover:text-red-500"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Порядок сортировки</label>
