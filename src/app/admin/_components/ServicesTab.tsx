@@ -65,7 +65,7 @@ export function ServicesTab({
               <div>
                 <label className="block text-sm font-medium mb-2">Особенности</label>
                 <div className="space-y-2">
-                  <Textarea
+                  <textarea
                     value={serviceFormData.features.join("\n")}
                     onChange={(e) =>
                       setServiceFormData({
@@ -74,8 +74,8 @@ export function ServicesTab({
                       })
                     }
                     placeholder="Введите каждую особенность на новой строке"
-                    rows={3}
-                    className="bg-background border-border"
+                    rows={5}
+                    className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 font-base text-base resize-none"
                   />
                   <p className="text-xs text-muted-foreground">Каждую особенность вводите на новой строке</p>
                   {serviceFormData.features.length > 0 && (
