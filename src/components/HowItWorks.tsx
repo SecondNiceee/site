@@ -76,7 +76,7 @@ export default function HowItWorks() {
       />
       
       {/* Orange accent glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[oklch(0.75_0.18_50)/8] dark:bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[oklch(0.75_0.18_50)/8] dark:bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl pointer-events-none" style={{ transform: 'translateX(-50%) translateZ(0)', contain: 'strict' }} />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header */}

@@ -33,12 +33,19 @@ export default function Hero() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-[fadeInScale_2s_ease-out_forwards]"
           style={{
             backgroundImage: `url('/molodoi-master-stroit-dom.jpg')`,
+            willChange: 'transform, opacity',
+            backfaceVisibility: 'hidden',
+            transform: 'translateZ(0)',
           }}
         />
         {/* Gradient overlay - только для темной темы */}
         {theme === "dark" && (
           <div
             className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-background animate-[fadeIn_1.8s_0.3s_ease-out_forwards]"
+            style={{
+              willChange: 'opacity',
+              backfaceVisibility: 'hidden',
+            }}
           />
         )}
         {/* Diagonal lines pattern */}

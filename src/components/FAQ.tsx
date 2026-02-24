@@ -111,7 +111,7 @@ export default function FAQ() {
   return (
     <section id="faq" className="py-24 md:py-32 relative overflow-hidden bg-card/50">
       {/* Background pattern */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ transform: 'translate(50%, -50%) translateZ(0)', contain: 'strict' }} />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
