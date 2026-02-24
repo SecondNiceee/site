@@ -75,7 +75,18 @@ export function ServicesTab({
                     }
                     placeholder="Введите каждую особенность на новой строке"
                     rows={5}
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 font-base text-base resize-none"
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem 0.75rem',
+                      backgroundColor: 'var(--background)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '0.375rem',
+                      resize: 'vertical',
+                      fontFamily: 'inherit',
+                      fontSize: '1rem',
+                      lineHeight: '1.5',
+                      color: 'inherit'
+                    }}
                   />
                   <p className="text-xs text-muted-foreground">Каждую особенность вводите на новой строке</p>
                   {serviceFormData.features.length > 0 && (
