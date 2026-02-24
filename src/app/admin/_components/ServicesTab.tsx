@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,24 @@ export function ServicesTab({
   handleSaveService,
   handleDeleteService,
 }: ServicesTabProps) {
+  const [featuresText, setFeaturesText] = useState(
+    serviceFormData.features.join("\n")
+  );
+
+  // Sync featuresText when form resets or a service is loaded for editing
+  useEffect(() => {
+    setFeaturesText(serviceFormData.features.join("\n"));
+  }, [editingService, isCreatingService]);
+
+  const onSave = () => {
+    // Process the raw text into features array before saving
+    const features = featuresText
+      .split("\n")
+      .map((f) => f.trim())
+      .filter((f) => f.length > 0);
+    handleSaveService(features);
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex justify-end mb-6">
@@ -65,54 +84,50 @@ export function ServicesTab({
               <div>
                 <label className="block text-sm font-medium mb-2">Особенности</label>
                 <div className="space-y-2">
-                  <textarea
-                    value={serviceFormData.features.join("\n")}
-                    onChange={(e) =>
-                      setServiceFormData({
-                        ...serviceFormData,
-                        features: e.target.value.split("\n").map(f => f.trim()).filter(f => f),
-                      })
-                    }
+                  <Textarea
+                    value={featuresText}
+                    onChange={(e) => setFeaturesText(e.target.value)}
                     onKeyDown={(e) => {
-                      // Allow all keyboard input including space and enter
                       e.stopPropagation();
                     }}
                     placeholder="Введите каждую особенность на новой строке"
                     rows={5}
-                    spellCheck="false"
+                    spellCheck={false}
                     autoComplete="off"
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem 0.75rem',
-                      backgroundColor: 'var(--background)',
-                      border: '1px solid var(--border)',
-                      borderRadius: '0.375rem',
-                      resize: 'vertical',
-                      fontFamily: 'inherit',
-                      fontSize: '1rem',
-                      lineHeight: '1.5',
-                      color: 'inherit',
-                      boxSizing: 'border-box',
-                      outline: 'none'
-                    }}
+                    className="bg-background border-border resize-y"
                   />
                   <p className="text-xs text-muted-foreground">Каждую особенность вводите на новой строке</p>
-                  {serviceFormData.features.length > 0 && (
+                  {featuresText.split("\n").filter((f) => f.trim()).length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-2">
-                      {serviceFormData.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center gap-2 px-3 py-1 bg-secondary rounded">
-                          <span className="text-sm">{feature}</span>
-                          <button
-                            onClick={() => {
-                              const newFeatures = serviceFormData.features.filter((_, i) => i !== idx);
-                              setServiceFormData({ ...serviceFormData, features: newFeatures });
-                            }}
-                            className="text-xs hover:text-red-500"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
+                      {featuresText
+                        .split("\n")
+                        .filter((f) => f.trim())
+                        .map((feature, idx) => (
+                          <div key={idx} className="flex items-center gap-2 px-3 py-1 bg-secondary rounded">
+                            <span className="text-sm">{feature.trim()}</span>
+                            <button
+                              onClick={() => {
+                                const lines = featuresText.split("\n");
+                                let targetIdx = 0;
+                                let count = 0;
+                                for (let i = 0; i < lines.length; i++) {
+                                  if (lines[i].trim()) {
+                                    if (count === idx) {
+                                      targetIdx = i;
+                                      break;
+                                    }
+                                    count++;
+                                  }
+                                }
+                                const newLines = lines.filter((_, i) => i !== targetIdx);
+                                setFeaturesText(newLines.join("\n"));
+                              }}
+                              className="text-xs hover:text-red-500"
+                            >
+                              {'\u2715'}
+                            </button>
+                          </div>
+                        ))}
                     </div>
                   )}
                 </div>
@@ -128,7 +143,7 @@ export function ServicesTab({
               </div>
               <div className="flex gap-3">
                 <Button
-                  onClick={handleSaveService}
+                  onClick={onSave}
                   className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold"
                 >
                   <Save className="w-4 h-4 mr-2" />
