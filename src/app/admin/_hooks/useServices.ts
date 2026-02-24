@@ -57,12 +57,16 @@ export function useServices(isAuthenticated: boolean) {
     setServiceFormData({ title: "", description: "", icon: "Building2", features: [], order_index: 0 });
   };
 
-  const handleSaveService = async () => {
+  const handleSaveService = async (featuresOverride?: string[]) => {
     try {
       const method = isCreatingService ? "POST" : "PUT";
+      const dataToSave = {
+        ...serviceFormData,
+        features: featuresOverride ?? serviceFormData.features,
+      };
       const body = isCreatingService
-        ? { ...serviceFormData, id: Date.now().toString() }
-        : { ...serviceFormData, id: editingService?.id };
+        ? { ...dataToSave, id: Date.now().toString() }
+        : { ...dataToSave, id: editingService?.id };
 
       const response = await fetch("/api/admin/services", {
         method,
