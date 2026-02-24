@@ -73,8 +73,14 @@ export function ServicesTab({
                         features: e.target.value.split("\n").map(f => f.trim()).filter(f => f),
                       })
                     }
+                    onKeyDown={(e) => {
+                      // Allow all keyboard input including space and enter
+                      e.stopPropagation();
+                    }}
                     placeholder="Введите каждую особенность на новой строке"
                     rows={5}
+                    spellCheck="false"
+                    autoComplete="off"
                     style={{
                       width: '100%',
                       padding: '0.5rem 0.75rem',
@@ -85,7 +91,9 @@ export function ServicesTab({
                       fontFamily: 'inherit',
                       fontSize: '1rem',
                       lineHeight: '1.5',
-                      color: 'inherit'
+                      color: 'inherit',
+                      boxSizing: 'border-box',
+                      outline: 'none'
                     }}
                   />
                   <p className="text-xs text-muted-foreground">Каждую особенность вводите на новой строке</p>
