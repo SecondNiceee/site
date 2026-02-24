@@ -9,18 +9,27 @@ export async function GET() {
     );
 
     const items = rows.map((item) => {
-      // Обработка features - может быть массивом или JSONB строкой
+      // Обработка features - гарантирует, что всегда получим массив
       let features: string[] = [];
-      if (Array.isArray(item.features)) {
-        features = item.features;
-      } else if (typeof item.features === "string") {
-        try {
-          features = JSON.parse(item.features);
-        } catch {
-          features = [];
+      
+      if (item.features) {
+        if (Array.isArray(item.features)) {
+          features = item.features.filter((f: any) => typeof f === "string" && f.trim().length > 0).map((f: string) => f.trim());
+        } else if (typeof item.features === "string") {
+          try {
+            const parsed = JSON.parse(item.features);
+            if (Array.isArray(parsed)) {
+              features = parsed.filter((f: any) => typeof f === "string" && f.trim().length > 0).map((f: string) => f.trim());
+            }
+          } catch {
+            features = [];
+          }
+        } else if (typeof item.features === "object") {
+          // На случай если PostgreSQL вернул объект напрямую
+          if (Array.isArray(item.features)) {
+            features = item.features.filter((f: any) => typeof f === "string" && f.trim().length > 0).map((f: string) => f.trim());
+          }
         }
-      } else if (item.features) {
-        features = item.features;
       }
 
       return {
@@ -45,6 +54,11 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const newItem = await request.json();
+    
+    // Очистка features - убираем пустые строки и форматируем
+    const cleanFeatures = Array.isArray(newItem.features) 
+      ? newItem.features.filter((f: any) => typeof f === "string" && f.trim().length > 0).map((f: string) => f.trim())
+      : [];
 
     const { rows } = await pool.query(
       `INSERT INTO services (id, title, description, icon, features, order_index)
@@ -55,7 +69,7 @@ export async function POST(request: NextRequest) {
         newItem.title,
         newItem.description,
         newItem.icon,
-        JSON.stringify(newItem.features || []),
+        JSON.stringify(cleanFeatures),
         newItem.order_index || 0,
       ]
     );
@@ -64,7 +78,7 @@ export async function POST(request: NextRequest) {
       success: true,
       item: {
         ...rows[0],
-        features: rows[0].features || [],
+        features: cleanFeatures,
         createdAt: rows[0].created_at,
       },
     });
@@ -78,6 +92,11 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const updatedItem = await request.json();
+    
+    // Очистка features - убираем пустые строки и форматируем
+    const cleanFeatures = Array.isArray(updatedItem.features) 
+      ? updatedItem.features.filter((f: any) => typeof f === "string" && f.trim().length > 0).map((f: string) => f.trim())
+      : [];
 
     const { rows } = await pool.query(
       `UPDATE services
@@ -88,7 +107,7 @@ export async function PUT(request: NextRequest) {
         updatedItem.title,
         updatedItem.description,
         updatedItem.icon,
-        JSON.stringify(updatedItem.features || []),
+        JSON.stringify(cleanFeatures),
         updatedItem.order_index || 0,
         updatedItem.id,
       ]
@@ -102,7 +121,7 @@ export async function PUT(request: NextRequest) {
       success: true,
       item: {
         ...rows[0],
-        features: rows[0].features || [],
+        features: cleanFeatures,
         createdAt: rows[0].created_at,
       },
     });

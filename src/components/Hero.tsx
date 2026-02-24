@@ -33,14 +33,12 @@ export default function Hero() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-[fadeInScale_2s_ease-out_forwards]"
           style={{
             backgroundImage: `url('/molodoi-master-stroit-dom.jpg')`,
-            opacity: 0,
           }}
         />
         {/* Gradient overlay - только для темной темы */}
         {theme === "dark" && (
           <div
             className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-background animate-[fadeIn_1.8s_0.3s_ease-out_forwards]"
-            style={{ opacity: 0 }}
           />
         )}
         {/* Diagonal lines pattern */}
@@ -62,10 +60,9 @@ export default function Hero() {
       <div className="relative z-10 container mx-auto px-4 lg:px-8 pt-24 pb-16">
         <div className="max-w-5xl mx-auto text-center">
           {/* Badge */}
-          <div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[oklch(0.75_0.18_50)/30] bg-[oklch(0.75_0.18_50)/10] text-sm text-[oklch(0.75_0.18_50)] mb-8 animate-[fadeInUp_1.2s_0.2s_ease-out_forwards]"
-            style={{ opacity: 0 }}
-          >
+        <div
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[oklch(0.75_0.18_50)/30] bg-[oklch(0.75_0.18_50)/10] text-sm text-[oklch(0.75_0.18_50)] mb-8 animate-[fadeInUp_1.2s_0.2s_ease-out_forwards]"
+        >
             <span className="w-2 h-2 rounded-full bg-[oklch(0.75_0.18_50)] pointer-events-none" style={{ boxShadow: '0 0 6px 1px oklch(0.75 0.18 50 / 0.4)' }} />
             Аутсорсинг рабочего персонала
           </div>
@@ -73,7 +70,6 @@ export default function Hero() {
           {/* Main Heading */}
           <h1
             className="font-[var(--font-oswald)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold uppercase leading-[0.95] tracking-tight mb-6 animate-[fadeInUp_1.4s_0.5s_ease-out_forwards]"
-            style={{ opacity: 0 }}
           >
             {titleParts.length > 1 ? (
               <>
@@ -88,7 +84,6 @@ export default function Hero() {
           {/* Subtitle */}
           <p
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-[fadeInUp_1.4s_0.8s_ease-out_forwards]"
-            style={{ opacity: 0 }}
           >
             {settings.hero.subtitle}
           </p>
@@ -96,7 +91,6 @@ export default function Hero() {
           {/* CTA Buttons */}
           <div
             className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 animate-[fadeInUp_1.4s_1.1s_ease-out_forwards]"
-            style={{ opacity: 0 }}
           >
             <Button
               onClick={scrollToContacts}
@@ -122,7 +116,6 @@ export default function Hero() {
           {/* Stats */}
           <div
             className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 animate-[fadeInUp_1.4s_1.4s_ease-out_forwards]"
-            style={{ opacity: 0 }}
           >
             {stats.map((stat) => (
               <div
