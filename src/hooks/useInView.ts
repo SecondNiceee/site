@@ -10,12 +10,22 @@ interface UseInViewOptions {
 
 export function useInView<T extends HTMLElement = HTMLDivElement>(
   options: UseInViewOptions = {}
-): [RefObject<T | null>, boolean] {
+): [RefObject<T | null>, boolean, boolean] {
   const { threshold = 0, rootMargin = "-100px", once = true } = options;
   const ref = useRef<T | null>(null);
   const [isInView, setIsInView] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Small delay so the CSS transition is active before the observer fires,
+    // preventing the element from immediately appearing without animation.
+    const mountTimer = setTimeout(() => setMounted(true), 50);
+    return () => clearTimeout(mountTimer);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     const element = ref.current;
     if (!element) return;
 
@@ -38,7 +48,7 @@ export function useInView<T extends HTMLElement = HTMLDivElement>(
     return () => {
       observer.unobserve(element);
     };
-  }, [threshold, rootMargin, once]);
+  }, [mounted, threshold, rootMargin, once]);
 
-  return [ref, isInView];
+  return [ref, isInView, mounted];
 }
