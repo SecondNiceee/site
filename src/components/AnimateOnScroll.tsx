@@ -29,7 +29,7 @@ export default function AnimateOnScroll({
   onClick,
   href,
 }: AnimateOnScrollProps) {
-  const [observerRef, isInView] = useInView({ once: true, rootMargin });
+  const [observerRef, isInView, mounted] = useInView({ once: true, rootMargin });
 
   const callbackRef = useCallback(
     (node: HTMLElement | null) => {
@@ -46,15 +46,21 @@ export default function AnimateOnScroll({
     none: "",
   };
 
+  // Before client mounts: render element normally (no hidden state)
+  // so there's no SSR/hydration flash. After mount, the transition
+  // kicks in from the hidden→visible state smoothly.
+  const hidden = mounted && !isInView;
+  const visible = !mounted || isInView;
+
   return (
     <Tag
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ref={callbackRef as any}
       className={cn(
         "transition-all ease-out",
-        !isInView && "opacity-0",
-        !isInView && directionStyles[direction],
-        isInView && "opacity-100 translate-x-0 translate-y-0",
+        hidden && "opacity-0",
+        hidden && directionStyles[direction],
+        visible && "opacity-100 translate-x-0 translate-y-0",
         className
       )}
       style={{
