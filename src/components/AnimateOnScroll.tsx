@@ -17,10 +17,10 @@ interface AnimateOnScrollProps {
 }
 
 const directionMap: Record<string, string> = {
-  up: "translateY(24px)",
-  down: "translateY(-24px)",
-  left: "translateX(-24px)",
-  right: "translateX(24px)",
+  up: "translateY(40px)",
+  down: "translateY(-40px)",
+  left: "translateX(-40px)",
+  right: "translateX(40px)",
   none: "none",
 };
 
@@ -50,7 +50,13 @@ export default function AnimateOnScroll({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsInView(true);
+          // Double rAF: let the browser paint the initial hidden state first,
+          // then trigger the transition on the next frame so it actually animates.
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              setIsInView(true);
+            });
+          });
           observer.unobserve(entry.target);
         }
       },
@@ -72,7 +78,7 @@ export default function AnimateOnScroll({
       style={{
         opacity: isInView ? 1 : 0,
         transform: isInView ? "none" : initialTransform,
-        transition: `opacity ${duration}s cubic-bezier(0.25,0.1,0.25,1) ${delay}s, transform ${duration}s cubic-bezier(0.25,0.1,0.25,1) ${delay}s`,
+        transition: `opacity ${duration}s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform ${duration}s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
         willChange: isInView ? "auto" : "opacity, transform",
         ...style,
       }}
