@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { 
   Building2, Warehouse, Wrench, Factory,
   HardHat, Truck, Package, Hammer,
@@ -62,6 +62,30 @@ export default function Services() {
   const { settings } = useSettings();
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              el.style.opacity = "1";
+              el.style.transform = "translateY(0)";
+            });
+          });
+          observer.unobserve(el);
+        }
+      },
+      { rootMargin: "-60px" }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
 
   useEffect(() => {
@@ -145,7 +169,15 @@ export default function Services() {
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16 md:mb-20">
+        <div
+          ref={headerRef}
+          className="text-center mb-16 md:mb-20"
+          style={{
+            opacity: 0,
+            transform: "translateY(40px)",
+            transition: "opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1)",
+          }}
+        >
           <span className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4">
             Наши услуги
           </span>
