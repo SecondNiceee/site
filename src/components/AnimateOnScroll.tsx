@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, type ReactNode } from "react";
-import { useInView } from "@/hooks/useInView";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface AnimateOnScrollProps {
@@ -17,55 +16,70 @@ interface AnimateOnScrollProps {
   href?: string;
 }
 
+const directionMap: Record<string, string> = {
+  up: "translateY(40px)",
+  down: "translateY(-40px)",
+  left: "translateX(-40px)",
+  right: "translateX(40px)",
+  none: "none",
+};
+
 export default function AnimateOnScroll({
   children,
   className,
   delay = 0,
   direction = "up",
-  duration = 1.0,
+  duration = 0.9,
   as: Tag = "div",
-  rootMargin = "-80px",
+  rootMargin = "-60px",
   style,
   onClick,
   href,
 }: AnimateOnScrollProps) {
-  const [observerRef, isInView, mounted] = useInView({ once: true, rootMargin });
+  const ref = useRef<HTMLElement | null>(null);
+  const [isInView, setIsInView] = useState(false);
 
-  const callbackRef = useCallback(
-    (node: HTMLElement | null) => {
-      (observerRef as React.MutableRefObject<HTMLElement | null>).current = node;
-    },
-    [observerRef]
-  );
+  const callbackRef = useCallback((node: HTMLElement | null) => {
+    ref.current = node;
+  }, []);
 
-  const directionStyles: Record<string, string> = {
-    up: "translate-y-[30px]",
-    down: "translate-y-[-30px]",
-    left: "translate-x-[-30px]",
-    right: "translate-x-[30px]",
-    none: "",
-  };
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
 
-  // Before client mounts: render element normally (no hidden state)
-  // so there's no SSR/hydration flash. After mount, the transition
-  // kicks in from the hidden→visible state smoothly.
-  const hidden = mounted && !isInView;
-  const visible = !mounted || isInView;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // Double rAF: let the browser paint the initial hidden state first,
+          // then trigger the transition on the next frame so it actually animates.
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              setIsInView(true);
+            });
+          });
+          observer.unobserve(entry.target);
+        }
+      },
+      { rootMargin }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [rootMargin]);
+
+  const initialTransform =
+    direction === "none" ? "none" : directionMap[direction];
 
   return (
     <Tag
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ref={callbackRef as any}
-      className={cn(
-        "transition-all ease-out",
-        hidden && "opacity-0",
-        hidden && directionStyles[direction],
-        visible && "opacity-100 translate-x-0 translate-y-0",
-        className
-      )}
+      className={cn(className)}
       style={{
-        transitionDuration: `${duration}s`,
-        transitionDelay: `${delay}s`,
+        opacity: isInView ? 1 : 0,
+        transform: isInView ? "none" : initialTransform,
+        transition: `opacity ${duration}s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform ${duration}s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
+        willChange: isInView ? "auto" : "opacity, transform",
         ...style,
       }}
       {...(onClick ? { onClick } : {})}
