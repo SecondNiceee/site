@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import AnimateOnScroll from "@/components/AnimateOnScroll";
 import { 
   Building2, Warehouse, Wrench, Factory,
   HardHat, Truck, Package, Hammer,
@@ -147,36 +147,36 @@ export default function Services() {
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16 md:mb-20">
-          <motion.span
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.1, ease: [0.25, 0.1, 0.25, 1] }}
+          <AnimateOnScroll
+            as="span"
+            direction="up"
+            duration={1.1}
+            delay={0}
             className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
           >
             Наши услуги
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.1, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+          </AnimateOnScroll>
+          <AnimateOnScroll
+            as="h2"
+            direction="up"
+            duration={1.1}
+            delay={0.15}
             className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
           >
             Подберём специалистов
             <br />
             <span className="gradient-text">под любую задачу</span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.1, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+          </AnimateOnScroll>
+          <AnimateOnScroll
+            as="p"
+            direction="up"
+            duration={1.1}
+            delay={0.3}
             className="text-muted-foreground text-lg max-w-2xl mx-auto"
           >
             Мы точно понимаем, какие специалисты нужны под каждую задачу,
             и предоставляем именно их
-          </motion.p>
+          </AnimateOnScroll>
         </div>
 
         {/* Services Grid */}
