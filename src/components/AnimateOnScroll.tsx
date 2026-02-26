@@ -8,7 +8,7 @@ interface AnimateOnScrollProps {
   className?: string;
   delay?: number;
   direction?: "up" | "down" | "left" | "right" | "none";
-  as?: "div" | "span" | "p" | "h2" | "a" | "section";
+  as?: "div" | "span" | "p" | "h1" | "h2" | "h3" | "a" | "section";
   rootMargin?: string;
   style?: React.CSSProperties;
   onClick?: (e: React.MouseEvent) => void;
