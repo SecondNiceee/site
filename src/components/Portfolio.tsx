@@ -1,9 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Building2 } from "lucide-react";
+import AnimateOnScroll from "@/components/AnimateOnScroll";
 
 // Portfolio data structure
 export interface PortfolioItem {
@@ -20,31 +20,7 @@ export interface PortfolioItem {
 // Set to false to show the portfolio section
 const HIDE_PORTFOLIO = false;
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.18,
-      duration: 1.0,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 1.1,
-      ease: [0.25, 0.1, 0.25, 1] as const,
-    },
-  },
-};
-
 export default function Portfolio() {
-  const ref = useRef(null);
   const [items, setItems] = useState<PortfolioItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -75,7 +51,7 @@ export default function Portfolio() {
     <section id="portfolio" className="py-24 md:py-32 relative overflow-hidden bg-card/30">
       {/* Top fade from previous section */}
       <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent" />
-      
+
       {/* Background decorations */}
       <div className="absolute top-1/2 left-0 w-72 h-72 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ transform: 'translate(-50%, -50%) translateZ(0)', contain: 'strict' }} />
       <div className="absolute top-1/3 right-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/3] rounded-full blur-3xl translate-x-1/2 pointer-events-none" style={{ transform: 'translateX(50%) translateZ(0)', contain: 'strict' }} />
@@ -83,60 +59,47 @@ export default function Portfolio() {
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16 md:mb-20">
-          <motion.span
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.1, ease: [0.25, 0.1, 0.25, 1] }}
+          <AnimateOnScroll
+            as="span"
+            direction="up"
+            delay={0.1}
             className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
           >
             Портфолио
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.1, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+          </AnimateOnScroll>
+          <AnimateOnScroll
+            as="h2"
+            direction="up"
+            delay={0.25}
             className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
           >
             <span className="gradient-text">Портфолио</span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.1, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+          </AnimateOnScroll>
+          <AnimateOnScroll
+            as="p"
+            direction="up"
+            delay={0.4}
             className="text-muted-foreground text-lg max-w-2xl mx-auto"
           >
             Проекты, которые мы успешно реализовали вместе с нашими клиентами
-          </motion.p>
+          </AnimateOnScroll>
         </div>
 
         {/* Loading state */}
         {isLoading && (
           <div className="flex justify-center items-center py-20">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="w-10 h-10 border-2 border-[oklch(0.75_0.18_50)/30] border-t-[oklch(0.75_0.18_50)] rounded-full"
-            />
+            <div className="w-10 h-10 border-2 border-[oklch(0.75_0.18_50)/30] border-t-[oklch(0.75_0.18_50)] rounded-full animate-spin" />
           </div>
         )}
 
         {/* Portfolio Grid */}
         {!isLoading && items.length > 0 && (
-          <motion.div
-            ref={ref}
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
-          >
-            {items.map((item) => (
-              <motion.div
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {items.map((item, index) => (
+              <AnimateOnScroll
                 key={item.id}
-                variants={itemVariants}
+                direction="up"
+                delay={0.1 + index * 0.18}
                 className="group relative rounded-3xl overflow-hidden bg-card border border-border hover:border-[oklch(0.75_0.18_50)/30] transition-all duration-500"
               >
                 {/* Image */}
@@ -189,15 +152,14 @@ export default function Portfolio() {
                     )}
                   </div>
                 </div>
-              </motion.div>
+              </AnimateOnScroll>
             ))}
-          </motion.div>
+          </div>
         )}
       </div>
 
       {/* Bottom decorative divider */}
       <div className="absolute bottom-0 left-0 right-0">
-        {/* Diagonal line pattern */}
         <div className="h-px bg-gradient-to-r from-transparent via-[oklch(0.75_0.18_50)/20] to-transparent" />
         <div className="h-24 bg-gradient-to-b from-transparent to-background" />
       </div>
