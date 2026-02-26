@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import AnimateOnScroll from "@/components/AnimateOnScroll";
 import { 
   Building2, Warehouse, Wrench, Factory,
   HardHat, Truck, Package, Hammer,
@@ -62,28 +63,6 @@ export default function Services() {
   const { settings } = useSettings();
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const headerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = headerRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          void el.getBoundingClientRect();
-          requestAnimationFrame(() => {
-            el.classList.add("in-view");
-          });
-          observer.unobserve(el);
-        }
-      },
-      { rootMargin: "-60px" }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
 
 
   useEffect(() => {
@@ -167,10 +146,7 @@ export default function Services() {
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header */}
-        <div
-          ref={headerRef}
-          className="animate-on-scroll text-center mb-16 md:mb-20"
-        >
+        <AnimateOnScroll className="text-center mb-16 md:mb-20">
           <span className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4">
             Наши услуги
           </span>
@@ -183,7 +159,7 @@ export default function Services() {
             Мы точно понимаем, какие специалисты нужны под каждую задачу,
             и предоставляем именно их
           </p>
-        </div>
+        </AnimateOnScroll>
 
         {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">

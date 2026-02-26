@@ -271,19 +271,19 @@
   animation: gradient-shift 5s ease infinite;
 }
 
-/* Scroll reveal animations */
-.animate-on-scroll {
+/* Scroll reveal animations (AOS) */
+.aos-base {
   opacity: 0;
-  transform: translateY(40px);
   transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
-.animate-on-scroll.dir-down { transform: translateY(-40px); }
-.animate-on-scroll.dir-left { transform: translateX(-40px); }
-.animate-on-scroll.dir-right { transform: translateX(40px); }
-.animate-on-scroll.dir-none { transform: none; }
-.animate-on-scroll.in-view {
+.aos-up    { transform: translateY(40px); }
+.aos-down  { transform: translateY(-40px); }
+.aos-left  { transform: translateX(-40px); }
+.aos-right { transform: translateX(40px); }
+.aos-none  { transform: none; }
+.aos-base.aos-in-view {
   opacity: 1;
   transform: none;
   will-change: auto;
