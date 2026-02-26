@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Edit, X, Save } from "lucide-react";
 import {
   Accordion,
@@ -12,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import AnimateOnScroll from "@/components/AnimateOnScroll";
 
 interface FAQItem {
   id: string;
@@ -27,9 +27,9 @@ export default function FAQ() {
   const [editingItem, setEditingItem] = useState<FAQItem | null>(null);
   const [editForm, setEditForm] = useState({ question: "", answer: "" });
   const [isSaving, setIsSaving] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    // Проверяем авторизацию
     const authStatus = sessionStorage.getItem("admin_authenticated");
     setIsAuthenticated(authStatus === "true");
 
@@ -53,6 +53,15 @@ export default function FAQ() {
   const handleEdit = (item: FAQItem) => {
     setEditingItem(item);
     setEditForm({ question: item.question, answer: item.answer });
+    requestAnimationFrame(() => setModalVisible(true));
+  };
+
+  const handleCancel = () => {
+    setModalVisible(false);
+    setTimeout(() => {
+      setEditingItem(null);
+      setEditForm({ question: "", answer: "" });
+    }, 300);
   };
 
   const handleSave = async () => {
@@ -71,7 +80,6 @@ export default function FAQ() {
       });
 
       if (response.ok) {
-        // Обновляем локальное состояние
         setFaqData((prev) =>
           prev.map((item) =>
             item.id === editingItem.id
@@ -79,8 +87,7 @@ export default function FAQ() {
               : item
           )
         );
-        setEditingItem(null);
-        setEditForm({ question: "", answer: "" });
+        handleCancel();
       } else {
         alert("Ошибка при сохранении");
       }
@@ -90,11 +97,6 @@ export default function FAQ() {
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const handleCancel = () => {
-    setEditingItem(null);
-    setEditForm({ question: "", answer: "" });
   };
 
   if (isLoading) {
@@ -108,66 +110,40 @@ export default function FAQ() {
       </section>
     );
   }
+
   return (
     <section id="faq" className="py-24 md:py-32 relative overflow-hidden bg-card/50">
       {/* Background pattern */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ transform: 'translate(50%, -50%) translateZ(0)', contain: 'strict' }} />
+      <div
+        className="absolute top-0 right-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl pointer-events-none"
+        style={{ transform: "translate(50%, -50%) translateZ(0)", contain: "strict" }}
+      />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
           {/* Left Column - Header */}
           <div className="lg:sticky lg:top-32 lg:self-start">
-            <motion.span
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.9 }}
-              className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
-            >
+            <AnimateOnScroll as="span" direction="up" delay={0.1} className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4">
               Вопросы и ответы
-            </motion.span>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.9, delay: 0.15 }}
-              className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
-            >
+            </AnimateOnScroll>
+            <AnimateOnScroll as="h2" direction="up" delay={0.2} className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6">
               Частые <span className="gradient-text">вопросы</span>
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.9, delay: 0.3 }}
-              className="text-muted-foreground text-lg mb-8"
-            >
+            </AnimateOnScroll>
+            <AnimateOnScroll as="p" direction="up" delay={0.3} className="text-muted-foreground text-lg mb-8">
               Ответы на популярные вопросы о нашей работе. Не нашли ответ?
               Свяжитесь с нами!
-            </motion.p>
-            <motion.a
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.9, delay: 0.4 }}
-              href="#contacts"
-              className="inline-flex items-center gap-2 text-[oklch(0.75_0.18_50)] hover:text-[oklch(0.85_0.18_50)] font-medium transition-colors"
-            >
+            </AnimateOnScroll>
+            <AnimateOnScroll as="a" direction="up" delay={0.4} href="#contacts" className="inline-flex items-center gap-2 text-[oklch(0.75_0.18_50)] hover:text-[oklch(0.85_0.18_50)] font-medium transition-colors">
               Задать вопрос
               <span>→</span>
-            </motion.a>
+            </AnimateOnScroll>
           </div>
 
           {/* Right Column - Accordion */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.0 }}
-          >
+          <AnimateOnScroll direction="up" delay={0.2}>
             <Accordion type="single" collapsible className="space-y-4">
               {faqData.length > 0 ? (
-                faqData.map((item, index) => (
+                faqData.map((item) => (
                   <AccordionItem
                     key={item.id}
                     value={`item-${item.id}`}
@@ -200,92 +176,67 @@ export default function FAQ() {
                 </p>
               )}
             </Accordion>
-          </motion.div>
+          </AnimateOnScroll>
         </div>
       </div>
 
-      {/* Edit Modal */}
-      <AnimatePresence>
-        {editingItem && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-            onClick={handleCancel}
+      {/* Edit Modal — CSS transition, no Framer Motion */}
+      {editingItem && (
+        <div
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300 ${modalVisible ? "opacity-100" : "opacity-0"}`}
+          onClick={handleCancel}
+        >
+          <div
+            className={`bg-card border border-border rounded-2xl p-8 max-w-2xl w-full mx-4 transition-all duration-300 ${modalVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
+            onClick={(e) => e.stopPropagation()}
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-card border border-border rounded-2xl p-8 max-w-2xl w-full mx-4"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="font-[var(--font-oswald)] text-2xl font-bold uppercase">
-                  Редактирование вопроса
-                </h2>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleCancel}
-                >
-                  <X className="w-5 h-5" />
-                </Button>
-              </div>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-[var(--font-oswald)] text-2xl font-bold uppercase">
+                Редактирование вопроса
+              </h2>
+              <Button variant="ghost" size="icon" onClick={handleCancel}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Вопрос
-                  </label>
-                  <Input
-                    value={editForm.question}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, question: e.target.value })
-                    }
-                    className="bg-background border-border"
-                    placeholder="Введите вопрос"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Ответ
-                  </label>
-                  <Textarea
-                    value={editForm.answer}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, answer: e.target.value })
-                    }
-                    rows={6}
-                    className="bg-background border-border"
-                    placeholder="Введите ответ"
-                  />
-                </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Вопрос</label>
+                <Input
+                  value={editForm.question}
+                  onChange={(e) => setEditForm({ ...editForm, question: e.target.value })}
+                  className="bg-background border-border"
+                  placeholder="Введите вопрос"
+                />
               </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Ответ</label>
+                <Textarea
+                  value={editForm.answer}
+                  onChange={(e) => setEditForm({ ...editForm, answer: e.target.value })}
+                  rows={6}
+                  className="bg-background border-border"
+                  placeholder="Введите ответ"
+                />
+              </div>
+            </div>
 
-              <div className="flex gap-3 mt-6">
-                <Button
-                  onClick={handleSave}
-                  disabled={isSaving || !editForm.question || !editForm.answer}
-                  className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold flex-1"
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  {isSaving ? "Сохранение..." : "Сохранить"}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleCancel}
-                  className="flex-1"
-                >
-                  Отмена
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <div className="flex gap-3 mt-6">
+              <Button
+                onClick={handleSave}
+                disabled={isSaving || !editForm.question || !editForm.answer}
+                className="bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold flex-1"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {isSaving ? "Сохранение..." : "Сохранить"}
+              </Button>
+              <Button variant="outline" onClick={handleCancel} className="flex-1">
+                Отмена
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
-

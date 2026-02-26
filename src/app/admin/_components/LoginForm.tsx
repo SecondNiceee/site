@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,11 +20,7 @@ export function LoginForm({
 }: LoginFormProps) {
   return (
     <main className="min-h-screen bg-background flex items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md p-8"
-      >
+      <div className="w-full max-w-md p-8 animate-[fadeInUp_0.8s_ease-out_forwards]">
         <Card className="bg-card border-border">
           <CardHeader className="text-center">
             <div className="w-16 h-16 rounded-full bg-[oklch(0.75_0.18_50)/10] flex items-center justify-center mx-auto mb-4">
@@ -38,9 +33,7 @@ export function LoginForm({
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">
-                  Логин
-                </label>
+                <label className="block text-sm font-medium mb-2">Логин</label>
                 <Input
                   type="text"
                   placeholder="Введите логин"
@@ -52,9 +45,7 @@ export function LoginForm({
                 />
               </div>
               <div className="relative">
-                <label className="block text-sm font-medium mb-2">
-                  Пароль
-                </label>
+                <label className="block text-sm font-medium mb-2">Пароль</label>
                 <Input
                   type={showPassword ? "text" : "password"}
                   placeholder="Введите пароль"
@@ -72,7 +63,13 @@ export function LoginForm({
                 </button>
               </div>
               {error && (
-                <div className={`text-sm p-3 rounded-lg ${isBlocked ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'text-red-500'}`}>
+                <div
+                  className={`text-sm p-3 rounded-lg ${
+                    isBlocked
+                      ? "bg-red-500/10 text-red-500 border border-red-500/20"
+                      : "text-red-500"
+                  }`}
+                >
                   <p>{error}</p>
                   {isBlocked && (
                     <p className="mt-1 text-xs opacity-80">
@@ -83,7 +80,13 @@ export function LoginForm({
               )}
               {remainingAttempts !== null && !isBlocked && remainingAttempts <= 3 && (
                 <p className="text-amber-500 text-xs">
-                  {"Внимание: осталось"} {remainingAttempts} {remainingAttempts === 1 ? 'попытка' : remainingAttempts <= 4 ? 'попытки' : 'попыток'} {"до блокировки"}
+                  {"Внимание: осталось"} {remainingAttempts}{" "}
+                  {remainingAttempts === 1
+                    ? "попытка"
+                    : remainingAttempts <= 4
+                    ? "попытки"
+                    : "попыток"}{" "}
+                  {"до блокировки"}
                 </p>
               )}
               <Button
@@ -91,12 +94,12 @@ export function LoginForm({
                 disabled={isBlocked}
                 className="w-full bg-[oklch(0.75_0.18_50)] hover:bg-[oklch(0.65_0.18_50)] text-black font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isBlocked ? 'Доступ заблокирован' : 'Войти'}
+                {isBlocked ? "Доступ заблокирован" : "Войти"}
               </Button>
             </form>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
     </main>
   );
 }

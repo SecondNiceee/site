@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { ArrowLeft, FileText, CheckCircle, Shield, DollarSign, Users, Building2, Phone } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import AnimateOnScroll from "@/components/AnimateOnScroll";
 
 const iconMap: Record<string, typeof FileText> = {
   "Общие положения": FileText,
@@ -66,12 +66,7 @@ export default function OfferPage() {
         <section className="relative py-16 md:py-24 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.75_0.18_50)/5] via-transparent to-transparent" />
           <div className="container mx-auto px-4 lg:px-8 relative z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="max-w-4xl mx-auto"
-            >
+            <div className="max-w-4xl mx-auto animate-[fadeInUp_0.8s_ease-out_forwards]">
               <Link
                 href="/"
                 className="inline-flex items-center gap-2 text-muted-foreground hover:text-[oklch(0.75_0.18_50)] transition-colors mb-8 group"
@@ -89,7 +84,8 @@ export default function OfferPage() {
                     Договор публичной оферты
                   </h1>
                   <p className="text-muted-foreground">
-                    Дата последнего обновления: {new Date().toLocaleDateString("ru-RU", {
+                    Дата последнего обновления:{" "}
+                    {new Date().toLocaleDateString("ru-RU", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
@@ -104,7 +100,7 @@ export default function OfferPage() {
                   Пожалуйста, внимательно ознакомьтесь с условиями перед использованием наших услуг.
                 </p>
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
@@ -113,11 +109,10 @@ export default function OfferPage() {
           <div className="container mx-auto px-4 lg:px-8">
             <div className="max-w-4xl mx-auto space-y-8">
               {sectionsWithIcons.map((section, index) => (
-                <motion.div
+                <AnimateOnScroll
                   key={section.title}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  direction="up"
+                  delay={index * 0.08}
                   className="bg-card border border-border rounded-3xl p-8 md:p-10 hover:border-[oklch(0.75_0.18_50)/30] transition-all duration-300"
                 >
                   <div className="flex items-start gap-6 mb-6">
@@ -140,7 +135,7 @@ export default function OfferPage() {
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </AnimateOnScroll>
               ))}
             </div>
           </div>
@@ -149,11 +144,9 @@ export default function OfferPage() {
         {/* CTA Section */}
         <section className="py-16 md:py-24">
           <div className="container mx-auto px-4 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+            <AnimateOnScroll
+              direction="up"
+              delay={0.1}
               className="max-w-4xl mx-auto bg-card border border-border rounded-3xl p-8 md:p-12 text-center"
             >
               <h2 className="font-[var(--font-oswald)] text-2xl md:text-3xl font-bold uppercase mb-4">
@@ -172,17 +165,11 @@ export default function OfferPage() {
                     Связаться с нами
                   </Link>
                 </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="px-8 py-6"
-                >
-                  <Link href="/">
-                    Вернуться на главную
-                  </Link>
+                <Button asChild variant="outline" className="px-8 py-6">
+                  <Link href="/">Вернуться на главную</Link>
                 </Button>
               </div>
-            </motion.div>
+            </AnimateOnScroll>
           </div>
         </section>
       </main>

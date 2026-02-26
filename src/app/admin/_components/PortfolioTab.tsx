@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Plus, Edit, Trash2, Save, X, Upload, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,11 +40,7 @@ export function PortfolioTab({
 
       {/* Edit/Create Form */}
       {(isCreating || editingItem) && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+        <div className="mb-8 animate-[fadeInUp_0.35s_ease-out_forwards]">
           <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle>
@@ -95,7 +90,9 @@ export function PortfolioTab({
                   <Input
                     type="number"
                     value={formData.workers}
-                    onChange={(e) => setFormData({ ...formData, workers: parseInt(e.target.value) || 0 })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, workers: parseInt(e.target.value) || 0 })
+                    }
                     className="bg-background border-border"
                   />
                 </div>
@@ -180,17 +177,13 @@ export function PortfolioTab({
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       )}
 
       {/* Items List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.map((item) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <div key={item.id} className="animate-[fadeInUp_0.4s_ease-out_forwards]">
             <Card className="bg-card border-border overflow-hidden">
               <div className="relative h-40 bg-secondary">
                 {item.image ? (
@@ -217,11 +210,7 @@ export function PortfolioTab({
                   {item.description}
                 </p>
                 <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleEdit(item)}
-                  >
+                  <Button size="sm" variant="outline" onClick={() => handleEdit(item)}>
                     <Edit className="w-4 h-4" />
                   </Button>
                   <Button
@@ -235,7 +224,7 @@ export function PortfolioTab({
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         ))}
       </div>
 

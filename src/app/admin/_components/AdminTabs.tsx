@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import {
   FolderOpen, Settings, FileText, HelpCircle, Briefcase, Lock,
 } from "lucide-react";
@@ -36,12 +35,12 @@ export function AdminTabs({ activeTab, onTabChange }: AdminTabsProps) {
             <Icon className="w-4 h-4" />
             {label}
           </div>
-          {activeTab === key && (
-            <motion.div
-              layoutId="activeTab"
-              className="absolute bottom-0 left-0 right-0 h-0.5 bg-[oklch(0.75_0.18_50)]"
-            />
-          )}
+          {/* Active indicator — CSS transition instead of Framer Motion layoutId */}
+          <div
+            className={`absolute bottom-0 left-0 right-0 h-0.5 bg-[oklch(0.75_0.18_50)] transition-all duration-300 origin-left ${
+              activeTab === key ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
+            }`}
+          />
         </button>
       ))}
     </div>
