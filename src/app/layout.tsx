@@ -49,6 +49,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" className="scroll-smooth dark" suppressHydrationWarning>
+      <head>
+        <link rel="preload" as="image" href="/molodoi-master-stroit-dom.jpg" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${oswald.variable} antialiased bg-background text-foreground`}
       >
