@@ -4,6 +4,7 @@ import { Users, Clock, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "@/hooks/useSettings";
 import { useTheme } from "@/components/ThemeProvider";
+import AnimateOnScroll from "@/components/AnimateOnScroll";
 
 
 const stats = [
@@ -32,22 +33,11 @@ export default function Hero() {
       <div className="absolute inset-0">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-[fadeInScale_2s_ease-out_forwards]"
-          style={{
-            backgroundImage: `url('/molodoi-master-stroit-dom.jpg')`,
-            willChange: 'transform, opacity',
-            backfaceVisibility: 'hidden',
-            transform: 'translateZ(0)',
-          }}
+          style={{ backgroundImage: `url('/molodoi-master-stroit-dom.jpg')` }}
         />
         {/* Gradient overlay - только для темной темы */}
         {theme === "dark" && (
-          <div
-            className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-background animate-[fadeIn_1.8s_0.3s_ease-out_forwards]"
-            style={{
-              willChange: 'opacity',
-              backfaceVisibility: 'hidden',
-            }}
-          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-background animate-[fadeIn_1.8s_0.3s_ease-out_forwards]" />
         )}
         {/* Diagonal lines pattern */}
         <div
@@ -68,13 +58,13 @@ export default function Hero() {
       <div className="relative z-10 container mx-auto px-4 lg:px-8 pt-24 pb-16">
         <div className="max-w-5xl mx-auto text-center">
           {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[oklch(0.75_0.18_50)/30] bg-[oklch(0.75_0.18_50)/10] text-sm text-[oklch(0.75_0.18_50)] mb-8 hero-fade-1">
+        <AnimateOnScroll direction="up" rootMargin="-50px" className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[oklch(0.75_0.18_50)/30] bg-[oklch(0.75_0.18_50)/10] text-sm text-[oklch(0.75_0.18_50)] mb-8">
           <span className="w-2 h-2 rounded-full bg-[oklch(0.75_0.18_50)] pointer-events-none" style={{ boxShadow: '0 0 6px 1px oklch(0.75 0.18 50 / 0.4)' }} />
           Аутсорсинг рабочего персонала
-        </div>
+        </AnimateOnScroll>
 
           {/* Main Heading */}
-          <h1 className="font-[var(--font-oswald)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold uppercase leading-[0.95] tracking-tight mb-6 hero-fade-2">
+          <AnimateOnScroll as="h1" direction="up" delay={0.15} rootMargin="-50px" className="font-[var(--font-oswald)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold uppercase leading-[0.95] tracking-tight mb-6">
             {titleParts.length > 1 ? (
               <>
                 <span className="block">{titleParts[0]},</span>
@@ -83,15 +73,15 @@ export default function Hero() {
             ) : (
               <span className="block gradient-text">{settings.hero.title}</span>
             )}
-          </h1>
+          </AnimateOnScroll>
 
           {/* Subtitle */}
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 hero-fade-3">
+          <AnimateOnScroll as="p" direction="up" delay={0.3} rootMargin="-50px" className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
             {settings.hero.subtitle}
-          </p>
+          </AnimateOnScroll>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 hero-fade-4">
+          <AnimateOnScroll direction="up" delay={0.45} rootMargin="-50px" className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
             <Button
               onClick={scrollToContacts}
               size="lg"
@@ -111,15 +101,17 @@ export default function Hero() {
             >
               Узнать больше
             </Button>
-          </div>
+          </AnimateOnScroll>
 
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8">
             {stats.map((stat, index) => (
-              <div
+              <AnimateOnScroll
                 key={stat.label}
-                className="flex flex-col items-center p-6 rounded-2xl glass-no-blur hero-fade-5"
-                style={{ animationDelay: `${0.65 + index * 0.12}s` }}
+                direction="up"
+                delay={0.55 + index * 0.12}
+                rootMargin="-50px"
+                className="flex flex-col items-center p-6 rounded-2xl glass-no-blur"
               >
                 <stat.icon className="w-8 h-8 text-[oklch(0.75_0.18_50)] mb-3" />
                 <span className="font-[var(--font-oswald)] text-3xl md:text-4xl font-bold text-foreground">
@@ -128,7 +120,7 @@ export default function Hero() {
                 <span className="text-sm text-muted-foreground mt-1">
                   {stat.label}
                 </span>
-              </div>
+              </AnimateOnScroll>
             ))}
           </div>
         </div>

@@ -304,21 +304,6 @@
   50% { transform: translateX(3px); }
 }
 
-/* Hero section — CSS-only entrance animations (no JS/IntersectionObserver needed) */
-.hero-fade-1,
-.hero-fade-2,
-.hero-fade-3,
-.hero-fade-4,
-.hero-fade-5 {
-  opacity: 0;
-  animation: fadeInUp 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  will-change: opacity, transform;
-}
-.hero-fade-1 { animation-delay: 0.2s; }
-.hero-fade-2 { animation-delay: 0.45s; }
-.hero-fade-3 { animation-delay: 0.7s; }
-.hero-fade-4 { animation-delay: 0.95s; }
-.hero-fade-5 { animation-delay: 1.0s; }
 
 /* Noise texture overlay */
 .noise-overlay {
