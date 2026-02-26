@@ -54,7 +54,6 @@ export default function Portfolio() {
 
       {/* Background decorations */}
       <div className="absolute top-1/2 left-0 w-72 h-72 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ transform: 'translate(-50%, -50%) translateZ(0)', contain: 'strict' }} />
-      <div className="absolute top-1/3 right-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/3] rounded-full blur-3xl translate-x-1/2 pointer-events-none" style={{ transform: 'translateX(50%) translateZ(0)', contain: 'strict' }} />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header */}
