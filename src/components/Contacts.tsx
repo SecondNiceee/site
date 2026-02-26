@@ -84,10 +84,6 @@ export default function Contacts() {
     <section id="contacts" className="py-24 md:py-32 relative overflow-hidden">
       {/* Background decorations */}
       <div
-        className="absolute bottom-0 left-0 w-96 h-96 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl pointer-events-none"
-        style={{ transform: "translate(-50%, 50%) translateZ(0)", contain: "strict" }}
-      />
-      <div
         className="absolute top-1/2 right-0 w-72 h-72 bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl pointer-events-none"
         style={{ transform: "translateX(50%) translateZ(0)", contain: "strict" }}
       />
