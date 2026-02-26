@@ -193,16 +193,6 @@
   }
 }
 
-/* Reduce motion for users who prefer it */
-@media (prefers-reduced-motion: reduce) {
-  .gradient-text {
-    animation: none !important;
-  }
-  * {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-}
 
 /* Custom scrollbar - Dark theme */
 .dark::-webkit-scrollbar {
