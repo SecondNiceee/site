@@ -118,7 +118,7 @@ export default function Hero() {
             {stats.map((stat, index) => (
               <div
                 key={stat.label}
-                className="flex flex-col items-center p-6 rounded-2xl glass hero-fade-5"
+                className="flex flex-col items-center p-6 rounded-2xl glass-no-blur hero-fade-5"
                 style={{ animationDelay: `${0.65 + index * 0.12}s` }}
               >
                 <stat.icon className="w-8 h-8 text-[oklch(0.75_0.18_50)] mb-3" />
