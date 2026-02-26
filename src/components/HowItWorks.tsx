@@ -1,9 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef } from "react";
 import { Phone, FileText, Users, CheckCircle } from "lucide-react";
+import AnimateOnScroll from "@/components/AnimateOnScroll";
 
 const steps = [
   {
@@ -36,96 +34,65 @@ const steps = [
   },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2,
-      duration: 1.0,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 1.0,
-      ease: [0.25, 0.1, 0.25, 1] as const,
-    },
-  },
-};
-
 export default function HowItWorks() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
   return (
     <section id="how-it-works" className="py-24 md:py-32 relative overflow-hidden bg-secondary/30">
       {/* Decorative grid pattern */}
-      <div 
+      <div
         className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02]"
         style={{
           backgroundImage: `linear-gradient(oklch(0.75 0.18 50 / 0.5) 1px, transparent 1px),
                            linear-gradient(90deg, oklch(0.75 0.18 50 / 0.5) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px'
+          backgroundSize: "60px 60px",
         }}
       />
-      
+
       {/* Orange accent glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[oklch(0.75_0.18_50)/8] dark:bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl pointer-events-none" style={{ transform: 'translateX(-50%) translateZ(0)', contain: 'strict' }} />
+      <div
+        className="absolute top-0 left-1/2 w-[600px] h-[300px] bg-[oklch(0.75_0.18_50)/8] dark:bg-[oklch(0.75_0.18_50)/5] rounded-full blur-3xl pointer-events-none"
+        style={{ transform: "translateX(-50%) translateZ(0)", contain: "strict" }}
+      />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16 md:mb-20">
-          <motion.span
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.1, ease: [0.25, 0.1, 0.25, 1] }}
+          <AnimateOnScroll
+            as="span"
+            direction="up"
+            delay={0.1}
             className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4"
           >
             Процесс работы
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.1, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+          </AnimateOnScroll>
+          <AnimateOnScroll
+            as="h2"
+            direction="up"
+            delay={0.2}
             className="font-[var(--font-oswald)] text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6"
           >
             Как начать <span className="gradient-text">работать?</span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.1, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+          </AnimateOnScroll>
+          <AnimateOnScroll
+            as="p"
+            direction="up"
+            delay={0.3}
             className="text-muted-foreground text-lg max-w-2xl mx-auto"
           >
             Простой и прозрачный процесс от заявки до результата
-          </motion.p>
+          </AnimateOnScroll>
         </div>
 
         {/* Timeline */}
-        <motion.div
-          ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="relative"
-        >
+        <div className="relative">
           {/* Timeline line - desktop */}
           <div className="hidden lg:block absolute top-24 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[oklch(0.75_0.18_50)/30] to-transparent" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((step, index) => (
-              <motion.div
+              <AnimateOnScroll
                 key={step.number}
-                variants={itemVariants}
+                direction="up"
+                delay={0.15 + index * 0.12}
                 className="relative group"
               >
                 {/* Connector line - mobile/tablet */}
@@ -141,7 +108,6 @@ export default function HowItWorks() {
                       <div className="w-12 h-12 rounded-full bg-[oklch(0.75_0.18_50)] flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-[oklch(0.75_0.18_50)/20]">
                         <step.icon className="w-6 h-6 text-black" />
                       </div>
-                      {/* Subtle glow effect */}
                       <div className="absolute inset-0 rounded-full bg-[oklch(0.75_0.18_50)/20] scale-125 blur-sm" />
                     </div>
                     <span className="font-[var(--font-oswald)] text-5xl font-bold text-foreground/5 group-hover:text-[oklch(0.75_0.18_50)/20] transition-colors duration-500">
@@ -164,19 +130,13 @@ export default function HowItWorks() {
                     <div className="w-3 h-3 border-t-2 border-r-2 border-[oklch(0.75_0.18_50)/50] rotate-45" />
                   </div>
                 )}
-              </motion.div>
+              </AnimateOnScroll>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.1, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-          className="text-center mt-16"
-        >
+        <AnimateOnScroll direction="up" delay={0.3} className="text-center mt-16">
           <p className="text-muted-foreground mb-6">
             Готовы обсудить ваш проект?
           </p>
@@ -187,7 +147,7 @@ export default function HowItWorks() {
             Оставить заявку
             <span>→</span>
           </a>
-        </motion.div>
+        </AnimateOnScroll>
       </div>
     </section>
   );

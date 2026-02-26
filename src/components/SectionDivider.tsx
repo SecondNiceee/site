@@ -1,7 +1,3 @@
-"use client";
-
-import { motion } from "framer-motion";
-
 interface SectionDividerProps {
   variant?: "default" | "wave" | "angle";
 }
@@ -30,13 +26,7 @@ export default function SectionDivider({ variant = "default" }: SectionDividerPr
     return (
       <div className="relative h-20 md:h-28 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-card/50 to-background" />
-        <motion.div
-          initial={{ scaleX: 0 }}
-          whileInView={{ scaleX: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.6, ease: "easeOut" }}
-          className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.75_0.18_50)/40] to-transparent origin-left"
-        />
+        <div className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.75_0.18_50)/40] to-transparent origin-left" />
         <div className="absolute bottom-0 left-0 right-0 h-full bg-gradient-to-t from-background to-transparent" />
       </div>
     );
@@ -45,41 +35,21 @@ export default function SectionDivider({ variant = "default" }: SectionDividerPr
   // Default divider
   return (
     <div className="relative py-12 md:py-16 overflow-hidden">
-      {/* Center decorative element */}
       <div className="container mx-auto px-4 relative">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.0 }}
-          className="flex items-center justify-center gap-4"
-        >
+        <div className="flex items-center justify-center gap-4">
           {/* Left line */}
-          <motion.div
-            initial={{ width: 0 }}
-            whileInView={{ width: "100%" }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.2, delay: 0.3 }}
-            className="h-px bg-gradient-to-r from-transparent to-[oklch(0.75_0.18_50)/30] max-w-[200px]"
-          />
-          
+          <div className="h-px bg-gradient-to-r from-transparent to-[oklch(0.75_0.18_50)/30] max-w-[200px] w-full" />
+
           {/* Center icon */}
           <div className="relative">
             <div className="w-3 h-3 rotate-45 border-2 border-[oklch(0.75_0.18_50)/50] bg-background" />
             <div className="absolute inset-0 w-3 h-3 rotate-45 bg-[oklch(0.75_0.18_50)/20] animate-ping" />
           </div>
-          
+
           {/* Right line */}
-          <motion.div
-            initial={{ width: 0 }}
-            whileInView={{ width: "100%" }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.2, delay: 0.3 }}
-            className="h-px bg-gradient-to-l from-transparent to-[oklch(0.75_0.18_50)/30] max-w-[200px]"
-          />
-        </motion.div>
+          <div className="h-px bg-gradient-to-l from-transparent to-[oklch(0.75_0.18_50)/30] max-w-[200px] w-full" />
+        </div>
       </div>
     </div>
   );
 }
-

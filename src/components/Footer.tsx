@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Send, MessageCircle, Phone, ArrowUp } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
 import { useTheme } from "@/components/ThemeProvider";
@@ -23,31 +22,23 @@ export default function Footer() {
   const { settings } = useSettings();
   const { theme } = useTheme();
 
-  // Format phone for tel: link
   const phoneLink = settings.contacts.phone.replace(/[^+\d]/g, "");
 
-  // Logo based on settings or theme fallback
-  const showLogo = settings.logo?.enabled !== false; // По умолчанию показываем
+  const showLogo = settings.logo?.enabled !== false;
   const logoSrc = settings.logo?.url
     ? settings.logo.url
-    : theme === "dark" ? "/logo_white.png" : "/logo_black.png";
+    : theme === "dark"
+    ? "/logo_white.png"
+    : "/logo_black.png";
 
   const socialLinks = [
-    ...(settings.social.telegram ? [{
-      name: "Telegram",
-      icon: Send,
-      href: settings.social.telegram,
-    }] : []),
-    ...(settings.social.whatsapp ? [{
-      name: "WhatsApp",
-      icon: MessageCircle,
-      href: settings.social.whatsapp,
-    }] : []),
-    {
-      name: "Телефон",
-      icon: Phone,
-      href: `tel:${phoneLink}`,
-    },
+    ...(settings.social.telegram
+      ? [{ name: "Telegram", icon: Send, href: settings.social.telegram }]
+      : []),
+    ...(settings.social.whatsapp
+      ? [{ name: "WhatsApp", icon: MessageCircle, href: settings.social.whatsapp }]
+      : []),
+    { name: "Телефон", icon: Phone, href: `tel:${phoneLink}` },
   ];
 
   const scrollToTop = () => {
@@ -83,18 +74,16 @@ export default function Footer() {
             </p>
             <div className="flex gap-3">
               {socialLinks.map((social) => (
-                <motion.a
+                <a
                   key={social.name}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-[oklch(0.75_0.18_50)] hover:text-black transition-colors duration-300"
+                  className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-[oklch(0.75_0.18_50)] hover:text-black transition-all duration-300 hover:scale-110 active:scale-95"
                   title={social.name}
                 >
                   <social.icon className="w-5 h-5" />
-                </motion.a>
+                </a>
               ))}
             </div>
           </div>
@@ -144,15 +133,13 @@ export default function Footer() {
             <p className="text-sm text-muted-foreground">
               © {currentYear} {settings.company.name}.
             </p>
-            <motion.button
+            <button
               onClick={scrollToTop}
-              whileHover={{ y: -3 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-[oklch(0.75_0.18_50)] transition-colors duration-300"
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-[oklch(0.75_0.18_50)] transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
             >
               Наверх
               <ArrowUp className="w-4 h-4" />
-            </motion.button>
+            </button>
           </div>
         </div>
       </div>
