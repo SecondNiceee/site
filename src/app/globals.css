@@ -301,8 +301,8 @@
 }
 
 @keyframes fadeInScale {
-  from { opacity: 0; transform: scale(1.05) translateZ(0); }
-  to { opacity: 1; transform: scale(1) translateZ(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes bounceX {
@@ -319,6 +319,22 @@
   0%, 100% { transform: translateX(0); }
   50% { transform: translateX(3px); }
 }
+
+/* Hero section — CSS-only entrance animations (no JS/IntersectionObserver needed) */
+.hero-fade-1,
+.hero-fade-2,
+.hero-fade-3,
+.hero-fade-4,
+.hero-fade-5 {
+  opacity: 0;
+  animation: fadeInUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: opacity, transform;
+}
+.hero-fade-1 { animation-delay: 0.15s; }
+.hero-fade-2 { animation-delay: 0.3s; }
+.hero-fade-3 { animation-delay: 0.45s; }
+.hero-fade-4 { animation-delay: 0.6s; }
+.hero-fade-5 { animation-delay: 0.65s; }
 
 /* Noise texture overlay */
 .noise-overlay {
