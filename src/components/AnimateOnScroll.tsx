@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface AnimateOnScrollProps {
@@ -8,7 +8,6 @@ interface AnimateOnScrollProps {
   className?: string;
   delay?: number;
   direction?: "up" | "down" | "left" | "right" | "none";
-  duration?: number;
   as?: "div" | "span" | "p" | "h2" | "a" | "section";
   rootMargin?: string;
   style?: React.CSSProperties;
@@ -16,12 +15,12 @@ interface AnimateOnScrollProps {
   href?: string;
 }
 
-const directionMap: Record<string, string> = {
-  up: "translateY(40px)",
-  down: "translateY(-40px)",
-  left: "translateX(-40px)",
-  right: "translateX(40px)",
-  none: "none",
+const directionClass: Record<string, string> = {
+  up: "aos-up",
+  down: "aos-down",
+  left: "aos-left",
+  right: "aos-right",
+  none: "aos-none",
 };
 
 export default function AnimateOnScroll({
@@ -29,7 +28,6 @@ export default function AnimateOnScroll({
   className,
   delay = 0,
   direction = "up",
-  duration = 0.9,
   as: Tag = "div",
   rootMargin = "-60px",
   style,
@@ -37,48 +35,34 @@ export default function AnimateOnScroll({
   href,
 }: AnimateOnScrollProps) {
   const ref = useRef<HTMLElement | null>(null);
-  const [isInView, setIsInView] = useState(false);
-
-  const callbackRef = useCallback((node: HTMLElement | null) => {
-    ref.current = node;
-  }, []);
 
   useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
+    const el = ref.current;
+    if (!el) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          // Force a style recalculation so the browser registers the initial
-          // hidden state before we add .in-view and trigger the transition.
-          void element.getBoundingClientRect();
-          requestAnimationFrame(() => {
-            setIsInView(true);
-          });
-          observer.unobserve(entry.target);
+          // Direct DOM class manipulation — no React re-render,
+          // so the browser's transition engine fires cleanly.
+          el.classList.add("aos-in-view");
+          observer.unobserve(el);
         }
       },
       { rootMargin }
     );
 
-    observer.observe(element);
+    observer.observe(el);
     return () => observer.disconnect();
   }, [rootMargin]);
 
   return (
     <Tag
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ref={callbackRef as any}
-      className={cn(
-        "animate-on-scroll",
-        direction !== "up" && `dir-${direction}`,
-        isInView && "in-view",
-        className
-      )}
+      ref={ref as any}
+      className={cn("aos-base", directionClass[direction], className)}
       style={{
         transitionDelay: delay ? `${delay}s` : undefined,
-        transitionDuration: duration !== 0.9 ? `${duration}s` : undefined,
         ...style,
       }}
       {...(onClick ? { onClick } : {})}
