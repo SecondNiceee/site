@@ -71,11 +71,9 @@ export default function Services() {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          void el.getBoundingClientRect();
           requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              el.style.opacity = "1";
-              el.style.transform = "translateY(0)";
-            });
+            el.classList.add("in-view");
           });
           observer.unobserve(el);
         }
@@ -171,12 +169,7 @@ export default function Services() {
         {/* Section Header */}
         <div
           ref={headerRef}
-          className="text-center mb-16 md:mb-20"
-          style={{
-            opacity: 0,
-            transform: "translateY(40px)",
-            transition: "opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1)",
-          }}
+          className="animate-on-scroll text-center mb-16 md:mb-20"
         >
           <span className="inline-block text-[oklch(0.75_0.18_50)] text-sm font-semibold uppercase tracking-widest mb-4">
             Наши услуги

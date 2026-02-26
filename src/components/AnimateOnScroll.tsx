@@ -50,12 +50,11 @@ export default function AnimateOnScroll({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          // Double rAF: let the browser paint the initial hidden state first,
-          // then trigger the transition on the next frame so it actually animates.
+          // Force a style recalculation so the browser registers the initial
+          // hidden state before we add .in-view and trigger the transition.
+          void element.getBoundingClientRect();
           requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              setIsInView(true);
-            });
+            setIsInView(true);
           });
           observer.unobserve(entry.target);
         }
@@ -67,19 +66,19 @@ export default function AnimateOnScroll({
     return () => observer.disconnect();
   }, [rootMargin]);
 
-  const initialTransform =
-    direction === "none" ? "none" : directionMap[direction];
-
   return (
     <Tag
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ref={callbackRef as any}
-      className={cn(className)}
+      className={cn(
+        "animate-on-scroll",
+        direction !== "up" && `dir-${direction}`,
+        isInView && "in-view",
+        className
+      )}
       style={{
-        opacity: isInView ? 1 : 0,
-        transform: isInView ? "none" : initialTransform,
-        transition: `opacity ${duration}s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform ${duration}s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
-        willChange: isInView ? "auto" : "opacity, transform",
+        transitionDelay: delay ? `${delay}s` : undefined,
+        transitionDuration: duration !== 0.9 ? `${duration}s` : undefined,
         ...style,
       }}
       {...(onClick ? { onClick } : {})}
