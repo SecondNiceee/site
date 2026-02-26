@@ -253,8 +253,8 @@
 /* Scroll reveal animations (AOS) */
 .aos-base {
   opacity: 0;
-  transition: opacity 1.6s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 2.2s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 2.2s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform;
 }
 .aos-up    { transform: translateY(40px); }
@@ -311,14 +311,14 @@
 .hero-fade-4,
 .hero-fade-5 {
   opacity: 0;
-  animation: fadeInUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: fadeInUp 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   will-change: opacity, transform;
 }
-.hero-fade-1 { animation-delay: 0.15s; }
-.hero-fade-2 { animation-delay: 0.3s; }
-.hero-fade-3 { animation-delay: 0.45s; }
-.hero-fade-4 { animation-delay: 0.6s; }
-.hero-fade-5 { animation-delay: 0.65s; }
+.hero-fade-1 { animation-delay: 0.2s; }
+.hero-fade-2 { animation-delay: 0.45s; }
+.hero-fade-3 { animation-delay: 0.7s; }
+.hero-fade-4 { animation-delay: 0.95s; }
+.hero-fade-5 { animation-delay: 1.0s; }
 
 /* Noise texture overlay */
 .noise-overlay {
