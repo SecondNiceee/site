@@ -271,6 +271,24 @@
   animation: gradient-shift 5s ease infinite;
 }
 
+/* Scroll reveal animations */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.animate-on-scroll.dir-down { transform: translateY(-40px); }
+.animate-on-scroll.dir-left { transform: translateX(-40px); }
+.animate-on-scroll.dir-right { transform: translateX(40px); }
+.animate-on-scroll.dir-none { transform: none; }
+.animate-on-scroll.in-view {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
 /* CSS-only scroll reveal animations for Hero */
 @keyframes fadeIn {
   from { opacity: 0; }
